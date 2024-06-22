@@ -4,4 +4,4 @@
 
 from .version import VERSION as __version__  # noqa
 
-__author__ = "Bikatr7 <Bikatr7@proton.me>"
+__author__ = "Kaden Bilyeu (Bikatr7) <Bikatr7@proton.me>"
