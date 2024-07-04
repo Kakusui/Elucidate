@@ -16,6 +16,14 @@ class Elucidate:
 
     """
 
+##-------------------start-of-openai_self_eval()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def openai_self_eval():
+
+        pass
+
+
 ##-------------------start-of-set_credentials()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -53,3 +61,31 @@ class Elucidate:
         """
 
         return EasyTL.test_credentials(api_type)
+    
+##-------------------start-of-calculate_cost()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def calculate_cost(text:str | typing.Iterable[str],
+                       service:typing.Literal["gemini", "openai", "anthropic"],
+                       model:typing.Optional[str] = None,
+                       evaluation_instructions:typing.Optional[str] = None
+                        ) -> typing.Tuple[int, float, str]:
+        
+        """
+
+        Calculates the cost of evaluating the given text using the specified service.
+
+        Parameters:
+        text (string or iterable[string]) : The text to evaluate.
+        service (literal["gemini", "openai", "anthropic"]) : The service to use for evaluation.
+        model (string or None) : The model to use for evaluation. If None, the default model will be used.
+        evaluation_instructions (string or None) : The instructions to use for evaluation. If None, the default instructions will be used.
+
+        Returns:
+        (int) : The number of tokens in the text.
+        (float) : The cost of evaluating the text.
+        (string) : The model used for evaluation.
+
+        """
+
+        return EasyTL.calculate_cost(text, service, model, evaluation_instructions)
