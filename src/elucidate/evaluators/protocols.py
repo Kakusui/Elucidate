@@ -2,7 +2,8 @@
 ## Use of this source code is governed by an GNU Lesser General Public License v2.1
 ## license that can be found in the LICENSE file.
 
-@staticmethod
-def test(test:str | None = None) -> None:
+from typing import Protocol
 
-    print("OpenAI Evaluator Test")
+class OpenAIServiceProtocol(Protocol):
+    @staticmethod
+    def test(test:str | None = None) -> None: ...

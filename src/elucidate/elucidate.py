@@ -8,13 +8,14 @@ import typing
 ## third-party libraries
 import easytl.services.openai_service
 
-## custom modules
+## custom modules 
 from .evaluators.openai_evaluator import test
+from .evaluators.protocols import OpenAIServiceProtocol
 
 ## bootstrapping new functions to EasyTL
 setattr(easytl.services.openai_service.OpenAIService, "test", test)
 
-## finally importing EasyTL
+## finally importing EasyTL with modified OpenAIService
 from easytl import EasyTL
 
 class Elucidate:
@@ -28,10 +29,17 @@ class Elucidate:
 ##-------------------start-of-openai_self_eval()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def openai_self_eval():
+    def openai_self_eval(service: OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, easytl.services.openai_service.OpenAIService)):
 
-        print(easytl.services.openai_service.OpenAIService.test()) # type: ignore
+        """
+        
+        Allows you to use the modified OpenAIService with type hints.
 
+        No need to subclass or deal with lack of typehints.
+
+        """
+
+        service.test()
 
 ##-------------------start-of-set_credentials()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
