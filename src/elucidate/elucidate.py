@@ -6,6 +6,15 @@
 import typing
 
 ## third-party libraries
+import easytl.services.openai_service
+
+## custom modules
+from .evaluators.openai_evaluator import test
+
+## bootstrapping new functions to EasyTL
+setattr(easytl.services.openai_service.OpenAIService, "test", test)
+
+## finally importing EasyTL
 from easytl import EasyTL
 
 class Elucidate:
@@ -21,7 +30,7 @@ class Elucidate:
     @staticmethod
     def openai_self_eval():
 
-        pass
+        print(easytl.services.openai_service.OpenAIService.test()) # type: ignore
 
 
 ##-------------------start-of-set_credentials()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
