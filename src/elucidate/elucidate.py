@@ -35,7 +35,7 @@ class Elucidate:
         
         Allows you to use the modified OpenAIService with type hints.
 
-        No need to subclass or deal with lack of typehints.
+        No need to subclass or deal with lack of type hints.
 
         """
 
