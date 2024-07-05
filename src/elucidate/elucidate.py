@@ -9,14 +9,23 @@ import typing
 import easytl.services.openai_service
 
 ## custom modules 
-from .evaluators.openai_evaluator import test
+from .evaluators.openai_evaluator import test, _default_evaluation_instructions, _evaluate_translation, internal_evaluate_translation
 from .evaluators.protocols import OpenAIServiceProtocol
 
 ## bootstrapping new functions to EasyTL
 setattr(easytl.services.openai_service.OpenAIService, "test", test)
 
+## bootstrapping new functions to OpenAIService
+setattr(easytl.services.openai_service.OpenAIService, "_evaluate_translation", _evaluate_translation)
+setattr(easytl.services.openai_service.OpenAIService, "__evaluate_translation", internal_evaluate_translation)
+
+## bootstrapping new attributes to OpenAIService
+setattr(easytl.services.openai_service.OpenAIService, "_default_evaluation_instructions", _default_evaluation_instructions)
+
 ## finally importing EasyTL with modified OpenAIService
 from easytl import EasyTL
+
+from easytl.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
 
 class Elucidate:
 
@@ -26,10 +35,10 @@ class Elucidate:
 
     """
 
-##-------------------start-of-openai_self_eval()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-test()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def openai_self_eval(service: OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, easytl.services.openai_service.OpenAIService)):
+    def test(service: OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, easytl.services.openai_service.OpenAIService)):
 
         """
         
@@ -40,6 +49,70 @@ class Elucidate:
         """
 
         service.test()
+
+##-------------------start-of-openai_evaluate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def openai_evaluate(text:typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
+                        override_previous_settings:bool = True,
+                        decorator:typing.Callable | None = None,
+                        logging_directory:str | None = None,
+                        response_type:typing.Literal["text", "raw", "json", "raw_json"] | None = "text",
+                        evaluation_delay:float | None = None,
+                        evaluation_instructions:str | SystemTranslationMessage | None = None,
+                        model:str="gpt-4",
+                        temperature:float | None | NotGiven = NOT_GIVEN,
+                        top_p:float | None | NotGiven = NOT_GIVEN,
+                        stop:typing.List[str] | None | NotGiven = NOT_GIVEN,
+                        max_tokens:int | None | NotGiven = NOT_GIVEN,
+                        presence_penalty:float | None | NotGiven = NOT_GIVEN,
+                        frequency_penalty:float | None | NotGiven = NOT_GIVEN,
+                        service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, easytl.services.openai_service.OpenAIService)
+                        ) -> typing.Union[typing.List[str], str, typing.List[ChatCompletion], ChatCompletion]:
+        
+        ## Should be done after validating the settings to reduce cost to the user
+        EasyTL.test_credentials("openai")
+
+        json_mode = True if response_type in ["json", "raw_json"] else False
+        
+        if(override_previous_settings == True):
+            service._set_attributes(model=model,
+                                        temperature=temperature,
+                                        logit_bias=None,
+                                        top_p=top_p,
+                                        n=1,
+                                        stop=stop,
+                                        max_tokens=max_tokens,
+                                        presence_penalty=presence_penalty,
+                                        frequency_penalty=frequency_penalty,
+                                        decorator=decorator,
+                                        logging_directory=logging_directory,
+                                        semaphore=None,
+                                        rate_limit_delay=evaluation_delay,
+                                        json_mode=json_mode)
+
+            ## Done afterwards, cause default evaluation instructions can change based on set_attributes()
+            evaluation_instructions = evaluation_instructions or service._default_evaluation_instructions
+        
+        else:
+            evaluation_instructions = service._system_message
+
+        translation_batches = service._build_evaluation_batches(text, evaluation_instructions)
+        
+        translations = []
+        
+        for _text, _translation_instructions in translation_batches:
+
+            _result = service._evaluate_translation(_translation_instructions, _text)
+
+            translation = _result if response_type in ["raw", "raw_json"] else _result.choices[0].message.content
+            
+            translations.append(translation)
+        
+        ## If originally a single text was provided, return a single translation instead of a list
+        result = translations if isinstance(text, typing.Iterable) and not isinstance(text, str) else translations[0]
+        
+        return result
 
 ##-------------------start-of-set_credentials()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

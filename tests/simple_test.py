@@ -15,4 +15,4 @@ sys.path.append(src_path)
 ## Now you can import Elucidate from elucidate.elucidate, no need to test from site-packages
 from elucidate.elucidate import Elucidate
 
-Elucidate.openai_self_eval()
+Elucidate.test()
