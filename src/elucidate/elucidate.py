@@ -9,7 +9,7 @@ import typing
 import easytl.services.openai_service
 
 ## custom modules 
-from .evaluators.openai_evaluator import test, _default_evaluation_instructions, _evaluate_translation, internal_evaluate_translation
+from .evaluators.openai_evaluator import test, _default_evaluation_instructions, _evaluate_translation, internal_evaluate_translation, _build_evaluation_batches
 from .evaluators.protocols import OpenAIServiceProtocol
 
 ## bootstrapping new functions to EasyTL
@@ -18,6 +18,7 @@ setattr(easytl.services.openai_service.OpenAIService, "test", test)
 ## bootstrapping new functions to OpenAIService
 setattr(easytl.services.openai_service.OpenAIService, "_evaluate_translation", _evaluate_translation)
 setattr(easytl.services.openai_service.OpenAIService, "__evaluate_translation", internal_evaluate_translation)
+setattr(easytl.services.openai_service.OpenAIService, "_build_evaluation_batches", _build_evaluation_batches)
 
 ## bootstrapping new attributes to OpenAIService
 setattr(easytl.services.openai_service.OpenAIService, "_default_evaluation_instructions", _default_evaluation_instructions)
