@@ -7,6 +7,7 @@ on:
 jobs:
   build_and_test_3_12:
     runs-on: ubuntu-latest
+    environment: Elucidate
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -26,6 +27,8 @@ jobs:
           python -m pip install build
 
       - name: Set Environment Variables and Run Tests
+        env:
+          LOGGING_DIRECTORY: /tmp/
         run: |
           python tests/passing.py
 
@@ -36,6 +39,7 @@ jobs:
   build_and_test_3_11:
     needs: build_and_test_3_12
     runs-on: ubuntu-latest
+    environment: Elucidate
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -55,6 +59,8 @@ jobs:
           python -m pip install build
 
       - name: Set Environment Variables and Run Tests
+        env:
+          LOGGING_DIRECTORY: /tmp/
         run: |
           python tests/passing.py
 
@@ -65,6 +71,7 @@ jobs:
   build_and_test_3_10:
     needs: build_and_test_3_11
     runs-on: ubuntu-latest
+    environment: Elucidate
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -84,6 +91,8 @@ jobs:
           python -m pip install build
 
       - name: Set Environment Variables and Run Tests
+        env:
+          LOGGING_DIRECTORY: /tmp/
         run: |
           python tests/passing.py
 
