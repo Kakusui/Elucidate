@@ -5,15 +5,10 @@
 ## built-in imports
 import typing
 
-## third-party imports
-from easytl.services import openai_service
-
-from easytl.decorators import _sync_logging_decorator
-from easytl.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN
-from easytl.util.constants import VALID_JSON_OPENAI_MODELS
-
 ## custom modules
 from .protocols import OpenAIServiceProtocol
+
+from ..util.easytl_importer import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, VALID_JSON_OPENAI_MODELS, _sync_logging_decorator, openai_service
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

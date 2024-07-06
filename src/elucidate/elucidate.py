@@ -5,22 +5,15 @@
 ## built-in libraries
 import typing
 
-## third-party libraries
-import easytl.services.openai_service
-
 ## custom modules 
-from .evaluators.openai_evaluator import _default_evaluation_instructions, _evaluate_translation, internal_evaluate_translation, _build_evaluation_batches
 from .evaluators.protocols import OpenAIServiceProtocol
 
-## monkeystrapping new functions to OpenAIService
-setattr(easytl.services.openai_service.OpenAIService, "_evaluate_translation", _evaluate_translation)
-setattr(easytl.services.openai_service.OpenAIService, "__evaluate_translation", internal_evaluate_translation)
-setattr(easytl.services.openai_service.OpenAIService, "_build_evaluation_batches", _build_evaluation_batches)
+from .monkeystrapper import monkeystrap, OpenAIService
 
-## monkeystrapping new attributes to OpenAIService
-setattr(easytl.services.openai_service.OpenAIService, "_default_evaluation_instructions", _default_evaluation_instructions)
+## monkeystrapping new functions to EasyTL
+monkeystrap()
 
-## finally importing EasyTL with modified OpenAIService
+## finally importing EasyTL with modified classes
 from easytl import EasyTL
 
 from easytl.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
@@ -32,21 +25,6 @@ class Elucidate:
     Elucidate global client.
 
     """
-
-##-------------------start-of-test()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def test(service: OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, easytl.services.openai_service.OpenAIService)):
-
-        """
-        
-        Allows you to use the modified OpenAIService with type hints.
-
-        No need to subclass or deal with lack of type hints.
-
-        """
-
-        service.test()
 
 ##-------------------start-of-openai_evaluate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -65,7 +43,7 @@ class Elucidate:
                         max_tokens:int | None | NotGiven = NOT_GIVEN,
                         presence_penalty:float | None | NotGiven = NOT_GIVEN,
                         frequency_penalty:float | None | NotGiven = NOT_GIVEN,
-                        service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, easytl.services.openai_service.OpenAIService)
+                        service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, OpenAIService)
                         ) -> typing.Union[typing.List[str], str, typing.List[ChatCompletion], ChatCompletion]:
         
         ## Should be done after validating the settings to reduce cost to the user
