@@ -16,7 +16,7 @@ from openai import AsyncOpenAI, OpenAI
 
 class OpenAIServiceProtocol(typing.Protocol):
 
-    _default_evaluation_instructions:typing.ClassVar[SystemTranslationMessage] = SystemTranslationMessage("Please suggest a revised of the given text given it's translation.")
+    _default_evaluation_instructions:typing.ClassVar[SystemTranslationMessage] = SystemTranslationMessage("Please suggest a revised of the given text given it's original text and it's translation.")
     _system_message:typing.Optional[typing.Union[SystemTranslationMessage, str]] = _default_evaluation_instructions
 
     _log_directory:str | None = None

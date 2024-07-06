@@ -27,12 +27,12 @@ We're seeking contributors to help us develop this package. If you're interested
 
 The general idea is to use OpenAI (initially) and other LLM's (Anthropic and Gemini later) to continuously iterate upon translations to improve the quality. The package aims to utilize [EasyTL](https://github.com/Bikatr7/EasyTL) as a translation engine, but will also support providing already translated text to the package.
 
-This package utilizes Python protocols to "bootstrap" new functions onto the EasyTL package. This allows for Elucidate to utilize a lot of the common logic already present in EasyTL, without having to duplicate it. For an idea of how this works, see [here](/src/elucidate/evaluators/protocols.py).
+This package utilizes Python protocols to "monkeystrap" new functions onto the EasyTL package. This allows for Elucidate to utilize a lot of the common logic already present in EasyTL, without having to duplicate it. For an idea of how this works, see [here](/src/elucidate/evaluators/protocols.py).
 
 ### Known Issues:
 
 - **Logging Directory Management**: EasyTL manages its logging directory by retrieving the class name from the qualified function name of the logged function. This setup allows for extensive code reuse but   poses a challenge for protocol-based functions in Elucidate, which are classless static functions. Consequently, the logging directory attribute is not present. This issue can be addressed by:
-    - Bootstrapping a new decorator definition for Elucidate.
+    - Monkeystrapping a new decorator definition for Elucidate.
     - Modifying EasyTL's logging directory management approach.
     - Changing how protocol-based functions are arranged in Elucidate.
    

@@ -15,12 +15,6 @@ from easytl.util.constants import VALID_JSON_OPENAI_MODELS
 ## custom modules
 from .protocols import OpenAIServiceProtocol
 
-@staticmethod
-def test(test:str | None = None) -> None:
-
-    print("OpenAI Evaluator Test")
-
-
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 _default_evaluation_instructions = SystemTranslationMessage("Please suggest a revised of the given text given it's translation.")
