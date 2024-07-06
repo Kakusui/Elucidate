@@ -8,7 +8,7 @@ import typing
 ## custom modules
 from .protocols import OpenAIServiceProtocol
 
-from ..util.easytl_importer import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, VALID_JSON_OPENAI_MODELS, _sync_logging_decorator, openai_service
+from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, VALID_JSON_OPENAI_MODELS, _sync_logging_decorator, openai_service
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

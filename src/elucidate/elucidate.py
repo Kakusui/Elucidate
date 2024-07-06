@@ -8,7 +8,9 @@ import typing
 ## custom modules 
 from .evaluators.protocols import OpenAIServiceProtocol
 
-from .monkeystrapper import monkeystrap, OpenAIService
+from .util.classes import openai_service
+
+from .monkeystrapper import monkeystrap
 
 ## monkeystrapping new functions to EasyTL
 monkeystrap()
@@ -16,7 +18,7 @@ monkeystrap()
 ## finally importing EasyTL with modified classes
 from easytl import EasyTL
 
-from easytl.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
+from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
 
 class Elucidate:
 
@@ -43,7 +45,7 @@ class Elucidate:
                         max_tokens:int | None | NotGiven = NOT_GIVEN,
                         presence_penalty:float | None | NotGiven = NOT_GIVEN,
                         frequency_penalty:float | None | NotGiven = NOT_GIVEN,
-                        service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, OpenAIService)
+                        service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                         ) -> typing.Union[typing.List[str], str, typing.List[ChatCompletion], ChatCompletion]:
         
         ## Should be done after validating the settings to reduce cost to the user
