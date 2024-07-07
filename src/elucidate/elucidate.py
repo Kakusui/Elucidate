@@ -6,7 +6,7 @@
 import typing
 
 ## custom modules 
-from .evaluators.protocols import OpenAIServiceProtocol
+from .protocols import OpenAIServiceProtocol
 
 from .util.classes import openai_service
 
