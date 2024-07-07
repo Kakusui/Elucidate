@@ -48,6 +48,7 @@ class Elucidate:
                         service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                         ) -> typing.Union[typing.List[str], str, typing.List[ChatCompletion], ChatCompletion]:
         
+        
         ## Should be done after validating the settings to reduce cost to the user
         EasyTL.test_credentials("openai")
 
