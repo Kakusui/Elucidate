@@ -19,6 +19,9 @@ monkeystrap()
 from easytl import EasyTL
 
 from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
+from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length
+
+from .exceptions import InvalidResponseFormatException
 
 class Elucidate:
 
@@ -49,6 +52,16 @@ class Elucidate:
                         ) -> typing.Union[typing.List[str], str, typing.List[ChatCompletion], ChatCompletion]:
         
         
+        assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
+        
+        _settings = _return_curated_openai_settings(locals())
+
+        _validate_easytl_llm_translation_settings(_settings, "openai")
+
+        _validate_stop_sequences(stop)
+
+        _validate_text_length(text, model, service="openai")
+
         ## Should be done after validating the settings to reduce cost to the user
         EasyTL.test_credentials("openai")
 

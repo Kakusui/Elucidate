@@ -8,6 +8,4 @@ from openai import AsyncOpenAI, OpenAI
 ## custom modules
 from .imports.easytl_importer import openai_service
 
-from .imports.easytl_importer import _sync_logging_decorator
 from .imports.easytl_importer import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
-from .imports.easytl_importer import VALID_JSON_OPENAI_MODELS
