@@ -6,7 +6,8 @@
 import typing
 
 ## custom modules
-from .util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, VALID_JSON_OPENAI_MODELS, _sync_logging_decorator, NotGiven, OpenAI, AsyncOpenAI
+from .util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, OpenAI, AsyncOpenAI
+from .util.attributes import VALID_JSON_OPENAI_MODELS, _sync_logging_decorator
 
 class OpenAIServiceProtocol(typing.Protocol):
 

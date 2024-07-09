@@ -3,6 +3,7 @@
 ## license that can be found in the LICENSE file.
 
 ## built-in libraries
+import logging
 import typing
 
 ## custom modules 
@@ -51,6 +52,41 @@ class Elucidate:
                         service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                         ) -> typing.Union[typing.List[str], str, typing.List[ChatCompletion], ChatCompletion]:
         
+        """
+
+        Performs an evaluation on already translated text using the original untranslated text with OpenAI. Your text attribute should contain both.
+
+        This function assumes that the API key has already been set.
+
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's translation.' if not specified.
+
+        Due to how OpenAI's API works, NOT_GIVEN is treated differently than None. If a parameter is set to NOT_GIVEN, it is not passed to the API. If it is set to None, it is passed to the API as None.
+        
+        This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
+
+        Parameters:
+        text (string or iterable) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an OpenAI evaluation function.
+        decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, OpenAI will retry the request twice if it fails.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a ChatCompletion object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a ChatCompletion object, but with the content as a json-parseable string.
+        evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
+        evaluation_instructions (string or SystemTranslationMessage or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
+        model (string) : The model to use. (E.g. 'gpt-4', 'gpt-3.5-turbo-0125', 'gpt-4o', etc.)
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for translation and evaluation.
+        top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        stop (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
+        max_tokens (int or None) : The maximum number of tokens to output.
+        presence_penalty (float) : The presence penalty to use. This penalizes the model from repeating the same content in the output.
+        frequency_penalty (float) : The frequency penalty to use. This penalizes the model from using the same words too frequently in the output.
+
+        Returns:
+        result (string or list - string or ChatCompletion or list - ChatCompletion) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of ChatCompletion objects if the response type is 'raw' and input was an iterable, a ChatCompletion object otherwise.
+
+        """
+        
+        if(logging_directory is not None):
+            logging.warning("Logging is currently broken. No logs will be written.")
         
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
         
@@ -91,7 +127,7 @@ class Elucidate:
 
         translation_batches = service._build_evaluation_batches(text, evaluation_instructions)
         
-        translations = []
+        evaluations = []
         
         for _text, _translation_instructions in translation_batches:
 
@@ -99,10 +135,10 @@ class Elucidate:
 
             translation = _result if response_type in ["raw", "raw_json"] else _result.choices[0].message.content
             
-            translations.append(translation)
+            evaluations.append(translation)
         
         ## If originally a single text was provided, return a single translation instead of a list
-        result = translations if isinstance(text, typing.Iterable) and not isinstance(text, str) else translations[0]
+        result = evaluations if isinstance(text, typing.Iterable) and not isinstance(text, str) else evaluations[0]
         
         return result
 
@@ -120,7 +156,6 @@ class Elucidate:
         credentials (string) : The credentials to set. This is an api key for the specified API type.
 
         """
-
 
         EasyTL.set_credentials(api_type, credentials)
 

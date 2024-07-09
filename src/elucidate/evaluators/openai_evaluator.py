@@ -13,7 +13,7 @@ from ..util.attributes import VALID_JSON_OPENAI_MODELS, _sync_logging_decorator
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-_default_evaluation_instructions = SystemTranslationMessage("Please suggest a revised of the given text given it's translation.")
+_default_evaluation_instructions = SystemTranslationMessage("Please suggest a revised of the given text given it's original text and it's translation.")
 
 ##-------------------start-of-_build_evaluation_batches()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
