@@ -4,6 +4,68 @@
 
 ## built-in imports
 import typing
+import asyncio
+
+## third-party imports
+import google.generativeai as genai
+
+## custom modules
+from ..util.classes import GenerationConfig
 
 class GeminiServiceProtocol(typing.Protocol):
-    pass
+
+    _default_translation_instructions:str = "Please translate the following text into English."
+    _default_model:str = "gemini-pro"
+
+    _system_message = _default_translation_instructions
+
+    _model:str = _default_model
+    _temperature:float = 0.5
+    _top_p:float = 0.9
+    _top_k:int = 40
+    _candidate_count:int = 1
+    _stream:bool = False
+    _stop_sequences:typing.List[str] | None = None
+    _max_output_tokens:int | None = None
+
+    _client:genai.GenerativeModel
+    _generation_config:GenerationConfig
+
+    _semaphore_value:int = 5
+    _semaphore:asyncio.Semaphore = asyncio.Semaphore(_semaphore_value)
+
+    _rate_limit_delay:float | None = None
+
+    _decorator_to_use:typing.Union[typing.Callable, None] = None
+
+    _log_directory:str | None = None
+
+    ## Set to prevent any blockage of content
+    _safety_settings = [
+        {
+            "category": "HARM_CATEGORY_DANGEROUS",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_HARASSMENT",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_HATE_SPEECH",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold": "BLOCK_NONE",
+        },
+    ]
+
+    _json_mode:bool = False
+    _response_schema:typing.Mapping[str, typing.Any] | None = None
+    
+    @staticmethod
+    def _redefine_client() -> None: ...

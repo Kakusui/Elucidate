@@ -6,8 +6,8 @@
 from easytl.services import openai_service, gemini_service
 
 from easytl.decorators import _sync_logging_decorator
-from easytl.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
-from easytl.util.constants import VALID_JSON_OPENAI_MODELS
+from easytl.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerationConfig
+from easytl.util.constants import VALID_JSON_OPENAI_MODELS, VALID_JSON_ANTHROPIC_MODELS, VALID_JSON_GEMINI_MODELS
 from easytl.exceptions import InvalidResponseFormatException
 
 from easytl.util.util import _is_iterable_of_strings

@@ -3,7 +3,7 @@
 ## license that can be found in the LICENSE file.
 
 ## custom modules
-from .imports.easytl_importer import VALID_JSON_OPENAI_MODELS
+from .imports.easytl_importer import VALID_JSON_OPENAI_MODELS,  VALID_JSON_GEMINI_MODELS, VALID_JSON_ANTHROPIC_MODELS
 from .imports.easytl_importer import NOT_GIVEN
 from .imports.easytl_importer import _sync_logging_decorator
 

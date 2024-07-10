@@ -26,8 +26,6 @@ class OpenAIServiceProtocol(typing.Protocol):
     _sync_client:OpenAI
     _async_client:AsyncOpenAI
 
-    @staticmethod
-    def test(test:str | None = None) -> None: ...
 
     @staticmethod
     def _build_evaluation_batches(text: typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
