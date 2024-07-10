@@ -7,7 +7,7 @@ import logging
 import typing
 
 ## custom modules 
-from .protocols import OpenAIServiceProtocol
+from .protocols.openai_service_protocol import OpenAIServiceProtocol
 
 from .util.classes import openai_service
 

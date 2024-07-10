@@ -3,7 +3,7 @@
 ## license that can be found in the LICENSE file.
 
 ## third-party imports
-from easytl.services import openai_service
+from easytl.services import openai_service, gemini_service
 
 from easytl.decorators import _sync_logging_decorator
 from easytl.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
