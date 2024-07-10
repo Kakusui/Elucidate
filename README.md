@@ -27,7 +27,7 @@ We're seeking contributors to help us develop this package. If you're interested
 
 The general idea is to use OpenAI (initially) and other LLM's (Anthropic and Gemini later) to continuously iterate upon translations to improve the quality. The package aims to utilize [EasyTL](https://github.com/Bikatr7/EasyTL) as a translation engine, but will also support providing already translated text to the package.
 
-This package utilizes Python protocols to "monkeystrap" new functions onto the EasyTL package. This allows for Elucidate to utilize a lot of the common logic already present in EasyTL, without having to duplicate it. For an idea of how this works, see [here](/src/elucidate/evaluators/protocols.py).
+This package utilizes Python protocols to "monkeystrap" new functions onto the EasyTL package. This allows for Elucidate to utilize a lot of the common logic already present in EasyTL, without having to duplicate it. For an idea of how this works, see [here](/src/elucidate/evaluators/openai_evaluator.py).
 
 ### Known Issues:
 
