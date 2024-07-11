@@ -12,7 +12,7 @@ import google.generativeai as genai
 ## custom modules
 from ..protocols.gemini_service_protocol import GeminiServiceProtocol
 
-from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, gemini_service, GenerationConfig
+from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, gemini_service, GenerationConfig, GenerateContentResponse
 from ..util.attributes import VALID_JSON_GEMINI_MODELS as VALID_SYSTEM_MESSAGE_MODELS, _sync_logging_decorator
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -55,3 +55,86 @@ def _redefine_client(service:GeminiServiceProtocol = typing.cast(GeminiServicePr
     service._generation_config = GenerationConfig(**generation_config_params)
     
     service._semaphore = asyncio.Semaphore(service._semaphore_value)
+
+##-------------------start-of-_redefine_client_decorator()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def _redefine_client_decorator(func:typing.Callable,
+                                   service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+                                   ) -> typing.Callable:
+
+        """
+
+        Wraps a function to redefine the Gemini client before doing anything that requires the client.
+
+        Parameters:
+        func (callable) : The function to wrap.
+
+        Returns:
+        wrapper (callable) : The wrapped function.
+
+        """
+
+        def wrapper(*args, **kwargs):
+            service._redefine_client() 
+            return func(*args, **kwargs)
+        
+        return wrapper
+    
+##-------------------start-of-_translate_text()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    @_redefine_client_decorator
+    @_sync_logging_decorator
+    def _evaluate_translation(text_to_translate:str,
+                        service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+                        ) -> GenerateContentResponse:
+
+        """
+
+        Synchronously translates text.
+        Instructions default to translating whatever text is input into English.
+
+        Parameters:
+        text_to_translate (string) : The text to translate.
+
+        Returns:
+        GenerateContentResponse : The translation.
+
+        """
+
+        if(service._decorator_to_use is None):
+            return service.__evaluate_translation(text_to_translate)
+
+        _decorated_function = service._decorator_to_use(service.__evaluate_translation)
+        return _decorated_function(text_to_translate)
+    
+##-------------------start-of-__evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def internal_evaluate_translation(text_to_translate:str,
+                                      service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+                                      ) -> GenerateContentResponse:
+
+        """
+
+        Synchronously translates text.
+
+        Parameters:
+        text_to_translate (string) : The text to translate.
+
+        Returns:
+        _response (GenerateContentResponse) : The translation.
+
+        """
+
+        text_request = f"{text_to_translate}" if service._model in VALID_SYSTEM_MESSAGE_MODELS else f"{service._system_message}\n{text_to_translate}"
+
+        _response = service._client.generate_content(
+            contents=text_request,
+            generation_config=service._generation_config,
+            safety_settings=service._safety_settings,
+            stream=service._stream
+        )
+        
+        return _response

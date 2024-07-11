@@ -10,7 +10,7 @@ import asyncio
 import google.generativeai as genai
 
 ## custom modules
-from ..util.classes import GenerationConfig
+from ..util.classes import GenerationConfig, GenerateContentResponse
 
 class GeminiServiceProtocol(typing.Protocol):
 
@@ -69,3 +69,28 @@ class GeminiServiceProtocol(typing.Protocol):
     
     @staticmethod
     def _redefine_client() -> None: ...
+
+    @staticmethod
+    def _evaluate_translation(text_to_translate:str
+                        ) -> GenerateContentResponse: ...
+    @staticmethod
+    def __evaluate_translation(text_to_translate:str
+                                    ) -> GenerateContentResponse: ...
+    
+    @staticmethod
+    def _set_attributes(model:str="gemini-pro",
+                        system_message:str | None = _default_translation_instructions,
+                        temperature:float=0.5,
+                        top_p:float=0.9,
+                        top_k:int=40,
+                        candidate_count:int=1,
+                        stream:bool=False,
+                        stop_sequences:typing.List[str] | None=None,
+                        max_output_tokens:int | None=None,
+                        decorator:typing.Union[typing.Callable, None]=None,
+                        logging_directory:str | None=None,
+                        semaphore:int | None=None,
+                        rate_limit_delay:float | None=None,
+                        json_mode:bool=False,
+                        response_schema:typing.Mapping[str, typing.Any] | None = None
+                        ) -> None: ...
