@@ -20,9 +20,9 @@ monkeystrap()
 from easytl import EasyTL
 
 from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
-from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length
+from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length, _is_iterable_of_strings
 
-from .exceptions import InvalidResponseFormatException
+from .exceptions import InvalidResponseFormatException, InvalidTextInputException
 
 class Elucidate:
 
@@ -30,8 +30,9 @@ class Elucidate:
     
     Elucidate global client.
 
-    """
 
+    """
+    
 ##-------------------start-of-openai_evaluate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -124,6 +125,8 @@ class Elucidate:
         
         else:
             evaluation_instructions = service._system_message
+
+        assert isinstance(text, str) or _is_iterable_of_strings(text) or isinstance(text, ModelTranslationMessage) or _is_iterable_of_strings(text), InvalidTextInputException("text must be a string, an iterable of strings, a ModelTranslationMessage or an iterable of ModelTranslationMessages.")
 
         translation_batches = service._build_evaluation_batches(text, evaluation_instructions)
         
