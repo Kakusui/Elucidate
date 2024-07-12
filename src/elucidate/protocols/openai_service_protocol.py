@@ -4,10 +4,11 @@
 
 ## built-in imports
 import typing
+import asyncio
 
 ## custom modules
 from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, OpenAI, AsyncOpenAI
-from ..util.attributes import VALID_JSON_OPENAI_MODELS, _sync_logging_decorator
+from ..util.attributes import  _sync_logging_decorator, _async_logging_decorator
 
 class OpenAIServiceProtocol(typing.Protocol):
 
@@ -22,11 +23,16 @@ class OpenAIServiceProtocol(typing.Protocol):
 
     _json_mode:bool
 
+    _rate_limit_delay:float | None = None
+
     _default_model:str = "gpt-4"
     _model:str
 
     _sync_client:OpenAI
     _async_client:AsyncOpenAI
+
+    _semaphore_value:int = 5
+    _semaphore:asyncio.Semaphore = asyncio.Semaphore(_semaphore_value)
 
 
     @staticmethod
@@ -38,10 +44,19 @@ class OpenAIServiceProtocol(typing.Protocol):
     def _evaluate_translation(evaluation_instructions:typing.Optional[SystemTranslationMessage],
                                 evaluation_prompt:ModelTranslationMessage,
                                 ) -> ChatCompletion: ...
+    @staticmethod
+    @_async_logging_decorator
+    async def _evaluate_translation_async(evaluation_instructions:typing.Optional[SystemTranslationMessage],
+                            evaluation_prompt:ModelTranslationMessage
+                            ) -> ChatCompletion: ...
 
     @staticmethod
     def __evaluate_translation(instructions: SystemTranslationMessage, 
                                prompt: ModelTranslationMessage) -> ChatCompletion: ...
+    
+    @staticmethod
+    async def __evaluate_translation_async(instructions: SystemTranslationMessage,
+                                    prompt: ModelTranslationMessage) -> ChatCompletion: ...
     
     @staticmethod
     def _set_attributes(model:str = _default_model,

@@ -4,12 +4,13 @@
 
 ## built-in imports
 import typing
+import asyncio
 
 ## custom modules
 from ..protocols.openai_service_protocol import OpenAIServiceProtocol
 
 from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, openai_service
-from ..util.attributes import VALID_JSON_OPENAI_MODELS, _sync_logging_decorator
+from ..util.attributes import VALID_JSON_OPENAI_MODELS, _sync_logging_decorator, _async_logging_decorator
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -68,11 +69,11 @@ def _evaluate_translation(evaluation_instructions:typing.Optional[SystemTranslat
     
     """
     
-    Synchronously translates the text using the OpenAI API.
+    Synchronously evaluates the text using the OpenAI API.
 
     Parameters:
-    translation_instructions (SystemTranslationMessage) : The instructions to use for the translation.
-    translation_prompt (ModelTranslationMessage) : The text to translate.
+    evaluation_instructions (SystemTranslationMessage) : The instructions to use for the evaluation.
+    evaluation_prompt (ModelTranslationMessage) : The text to evaluate.
 
     Returns:
     response (ChatCompletion) : The response from the API.
@@ -88,7 +89,38 @@ def _evaluate_translation(evaluation_instructions:typing.Optional[SystemTranslat
     decorated_function = service._decorator_to_use(service.__evaluate_translation)
     return decorated_function(evaluation_instructions, evaluation_prompt)
 
-##-------------------start-of-_translate_message()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@staticmethod
+@_async_logging_decorator
+async def _evaluate_translation_async(evaluation_instructions:typing.Optional[SystemTranslationMessage],
+                            evaluation_prompt:ModelTranslationMessage,
+                            service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
+                            ) -> ChatCompletion:
+    
+    """
+
+    Asynchronously evaluates the text using the OpenAI API.
+    
+    Parameters:
+    evaluation_instructions (SystemTranslationMessage) : The instructions to use for the evaluation.
+    evaluation_prompt (ModelTranslationMessage) : The text to evaluate.
+
+    Returns:
+    response (ChatCompletion) : The response from the API.
+
+    """
+    
+    if(evaluation_instructions is None):
+        evaluation_instructions = service._default_translation_instructions
+
+    if(service._decorator_to_use is None):
+        return await service.__evaluate_translation_async(evaluation_instructions, evaluation_prompt)
+    
+    decorated_function = service._decorator_to_use(service.__evaluate_translation_async)
+    return await decorated_function(evaluation_instructions, evaluation_prompt)
+
+##-------------------start-of-internal_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
 def internal_evaluate_translation(instructions:SystemTranslationMessage, 
@@ -98,11 +130,11 @@ def internal_evaluate_translation(instructions:SystemTranslationMessage,
 
     """
 
-    Synchronously translates the text using the OpenAI API.
+    Synchronously evaluates the text using the OpenAI API.
 
     Parameters:
-    instructions (SystemTranslationMessage) : The instructions to use for the translation.
-    prompt (ModelTranslationMessage) : The text to translate.
+    instructions (SystemTranslationMessage) : The instructions to use for the evaluation.
+    prompt (ModelTranslationMessage) : The text to evaluate.
 
     Returns:
     response (ChatCompletion) : The response from the API.
@@ -123,3 +155,44 @@ def internal_evaluate_translation(instructions:SystemTranslationMessage,
     response = service._sync_client.chat.completions.create(**message_args)
     
     return response
+
+##-------------------start-of-__evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@staticmethod
+async def __evaluate_translation_async(instructions:SystemTranslationMessage, 
+                                 prompt:ModelTranslationMessage,
+                                 service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
+                                 ) -> ChatCompletion:
+
+    """
+
+    Asynchronously evaluates the text using the OpenAI API.
+
+    Parameters:
+    instructions (SystemTranslationMessage) : The instructions to use for the evaluation.
+    prompt (ModelTranslationMessage) : The text to evaluate.
+
+    Returns:
+    response (ChatCompletion) : The response from the API.
+
+    """
+
+    async with service._semaphore:
+
+        response_format = "json_object" if service._json_mode and service._model in VALID_JSON_OPENAI_MODELS else "text"
+
+        if(service._rate_limit_delay is not None):
+            await asyncio.sleep(service._rate_limit_delay)
+
+        attributes = ["temperature", "logit_bias", "top_p", "n", "stream", "stop", "presence_penalty", "frequency_penalty", "max_tokens"]
+        message_args = {
+            "response_format": { "type": response_format },
+            "model": service._model,
+            "messages": [instructions.to_dict(), prompt.to_dict()],
+            ## scary looking dict comprehension to get the attributes that are not NOT_GIVEN
+            **{attr: getattr(service, f"_{attr}") for attr in attributes if getattr(service, f"_{attr}") != NOT_GIVEN}
+        }
+
+        response = await service._async_client.chat.completions.create(**message_args)
+        
+        return response
