@@ -14,6 +14,8 @@ import backoff
 
 from elucidate import Elucidate
 
+from elucidate.exceptions import OpenAIError
+
 ##-------------------start-of-read_api_key()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def read_api_key(filename):
@@ -53,15 +55,15 @@ async def main():
 
     ## probably self explanatory from this point on
 
-    ## decorator = backoff.on_exception(backoff.expo, exception=(OpenAIError), logger=logging.getLogger())
+    decorator = backoff.on_exception(backoff.expo, exception=(OpenAIError), logger=logging.getLogger())
 
     print("------------------------------------------------OpenAI------------------------------------------------")
 
     print("-----------------------------------------------Text response-----------------------------------------------")
 
-    print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.")) 
+    print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
 
-    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.")) 
+    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
 
 ##-------------------end-of-main()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
