@@ -5,14 +5,19 @@
 ## custom modules 
 from .util.classes import openai_service
 
-from .evaluators.openai_evaluator import _default_evaluation_instructions, _evaluate_translation, internal_evaluate_translation, _build_evaluation_batches
+from .evaluators.openai_evaluator import _default_evaluation_instructions, _evaluate_translation, internal_evaluate_translation, _build_evaluation_batches, _evaluate_translation_async, internal_evaluate_translation_async
 
 def monkeystrap():
 
-    ## monkeystrapping new functions to OpenAIService
+    ## monkeystrapping new sync functions to OpenAIService
     setattr(openai_service.OpenAIService, "_evaluate_translation", _evaluate_translation)
     setattr(openai_service.OpenAIService, "__evaluate_translation", internal_evaluate_translation)
+    
     setattr(openai_service.OpenAIService, "_build_evaluation_batches", _build_evaluation_batches)
+
+    ## monkeystrapping new async functions to OpenAIService
+    setattr(openai_service.OpenAIService, "_evaluate_translation_async", _evaluate_translation_async)
+    setattr(openai_service.OpenAIService, "__evaluate_translation_async", internal_evaluate_translation_async)
 
     ## monkeystrapping new attributes to OpenAIService
     setattr(openai_service.OpenAIService, "_default_evaluation_instructions", _default_evaluation_instructions)

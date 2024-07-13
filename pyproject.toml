@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 name = "elucidate"
-version = "v0.0.1-alpha-2"
+version = "v0.0.1-alpha-3"
 authors = [
   { name="Bikatr7", email="Bikatr7@proton.me" },
 ]

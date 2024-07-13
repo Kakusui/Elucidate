@@ -234,7 +234,7 @@ class Elucidate:
                                         frequency_penalty=frequency_penalty,
                                         decorator=decorator,
                                         logging_directory=logging_directory,
-                                        semaphore=None,
+                                        semaphore=semaphore,
                                         rate_limit_delay=evaluation_delay,
                                         json_mode=json_mode)
 

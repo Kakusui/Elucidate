@@ -156,10 +156,10 @@ def internal_evaluate_translation(instructions:SystemTranslationMessage,
     
     return response
 
-##-------------------start-of-__evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-internal_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-async def __evaluate_translation_async(instructions:SystemTranslationMessage, 
+async def internal_evaluate_translation_async(instructions:SystemTranslationMessage, 
                                  prompt:ModelTranslationMessage,
                                  service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                                  ) -> ChatCompletion:

@@ -71,7 +71,9 @@ async def main():
     print("-----------------------------------------------Text response-----------------------------------------------")
 
     print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.")) 
-    
+
+    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.")) 
+
 ##-------------------end-of-main()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if(__name__ == "__main__"):
