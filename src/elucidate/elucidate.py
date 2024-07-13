@@ -5,6 +5,7 @@
 ## built-in libraries
 import logging
 import typing
+import asyncio
 
 ## custom modules 
 from .protocols.openai_service_protocol import OpenAIServiceProtocol
@@ -22,7 +23,7 @@ from easytl import EasyTL
 from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
 from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length, _is_iterable_of_strings
 
-from .exceptions import InvalidResponseFormatException, InvalidTextInputException
+from .exceptions import InvalidResponseFormatException, InvalidTextInputException, ElucidateException, InvalidAPITypeException
 
 class Elucidate:
 
@@ -50,7 +51,7 @@ class Elucidate:
                         max_tokens:int | None | NotGiven = NOT_GIVEN,
                         presence_penalty:float | None | NotGiven = NOT_GIVEN,
                         frequency_penalty:float | None | NotGiven = NOT_GIVEN,
-                        service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
+                        _protocol:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                         ) -> typing.Union[typing.List[str], str, typing.List[ChatCompletion], ChatCompletion]:
         
         """
@@ -105,7 +106,7 @@ class Elucidate:
         json_mode = True if response_type in ["json", "raw_json"] else False
         
         if(override_previous_settings == True):
-            service._set_attributes(model=model,
+            _protocol._set_attributes(model=model,
                                         temperature=temperature,
                                         logit_bias=None,
                                         top_p=top_p,
@@ -121,29 +122,227 @@ class Elucidate:
                                         json_mode=json_mode)
 
             ## Done afterwards, cause default evaluation instructions can change based on set_attributes()
-            evaluation_instructions = evaluation_instructions or service._default_evaluation_instructions
+            evaluation_instructions = evaluation_instructions or _protocol._default_evaluation_instructions
         
         else:
-            evaluation_instructions = service._system_message
+            evaluation_instructions = _protocol._system_message
 
         assert isinstance(text, str) or _is_iterable_of_strings(text) or isinstance(text, ModelTranslationMessage) or _is_iterable_of_strings(text), InvalidTextInputException("text must be a string, an iterable of strings, a ModelTranslationMessage or an iterable of ModelTranslationMessages.")
 
-        translation_batches = service._build_evaluation_batches(text, evaluation_instructions)
+        evaluation_batches = _protocol._build_evaluation_batches(text, evaluation_instructions)
         
         evaluations = []
         
-        for _text, _translation_instructions in translation_batches:
+        for _text, _evaluation_instructions in evaluation_batches:
 
-            _result = service._evaluate_translation(_translation_instructions, _text)
+            _result = _protocol._evaluate_translation(_evaluation_instructions, _text)
 
-            translation = _result if response_type in ["raw", "raw_json"] else _result.choices[0].message.content
+            evaluation = _result if response_type in ["raw", "raw_json"] else _result.choices[0].message.content
             
-            evaluations.append(translation)
+            evaluations.append(evaluation)
         
         ## If originally a single text was provided, return a single translation instead of a list
         result = evaluations if isinstance(text, typing.Iterable) and not isinstance(text, str) else evaluations[0]
         
         return result
+    
+##-------------------start-of-openai_evaluate_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    async def openai_evaluate_async(text:typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
+                        override_previous_settings:bool = True,
+                        decorator:typing.Callable | None = None,
+                        logging_directory:str | None = None,
+                        response_type:typing.Literal["text", "raw", "json", "raw_json"] | None = "text",
+                        semaphore:int | None = 5,
+                        evaluation_delay:float | None = None,
+                        evaluation_instructions:str | SystemTranslationMessage | None = None,
+                        model:str="gpt-4",
+                        temperature:float | None | NotGiven = NOT_GIVEN,
+                        top_p:float | None | NotGiven = NOT_GIVEN,
+                        stop:typing.List[str] | None | NotGiven = NOT_GIVEN,
+                        max_tokens:int | None | NotGiven = NOT_GIVEN,
+                        presence_penalty:float | None | NotGiven = NOT_GIVEN,
+                        frequency_penalty:float | None | NotGiven = NOT_GIVEN,
+                        _protocol:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
+                        ) -> typing.Union[typing.List[str], str, typing.List[ChatCompletion], ChatCompletion]:
+        
+        """
+
+        Asynchronous version of openai_evaluate(). 
+        Will generally be faster for iterables. Order is preserved.
+
+        Performs an evaluation on already translated text using the original untranslated text with OpenAI. Your text attribute should contain both.
+
+        This function assumes that the API key has already been set.
+
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's translation.' if not specified.
+
+        Due to how OpenAI's API works, NOT_GIVEN is treated differently than None. If a parameter is set to NOT_GIVEN, it is not passed to the API. If it is set to None, it is passed to the API as None.
+        
+        This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
+
+        Parameters:
+        text (string or iterable) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an OpenAI evaluation function.
+        decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, OpenAI will retry the request twice if it fails.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a ChatCompletion object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a ChatCompletion object, but with the content as a json-parseable string.
+        semaphore (int) : The number of concurrent requests to make. Default is 5.
+        evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
+        evaluation_instructions (string or SystemTranslationMessage or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
+        model (string) : The model to use. (E.g. 'gpt-4', 'gpt-3.5-turbo-0125', 'gpt-4o', etc.)
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for translation and evaluation.
+        top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        stop (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
+        max_tokens (int or None) : The maximum number of tokens to output.
+        presence_penalty (float) : The presence penalty to use. This penalizes the model from repeating the same content in the output.
+        frequency_penalty (float) : The frequency penalty to use. This penalizes the model from using the same words too frequently in the output.
+
+        Returns:
+        result (string or list - string or ChatCompletion or list - ChatCompletion) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of ChatCompletion objects if the response type is 'raw' and input was an iterable, a ChatCompletion object otherwise.
+
+        """
+        
+        if(logging_directory is not None):
+            logging.warning("Logging is currently broken. No logs will be written.")
+        
+        assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
+        
+        _settings = _return_curated_openai_settings(locals())
+
+        _validate_easytl_llm_translation_settings(_settings, "openai")
+
+        _validate_stop_sequences(stop)
+
+        _validate_text_length(text, model, service="openai")
+
+        ## Should be done after validating the settings to reduce cost to the user
+        EasyTL.test_credentials("openai")
+
+        json_mode = True if response_type in ["json", "raw_json"] else False
+        
+        if(override_previous_settings == True):
+            _protocol._set_attributes(model=model,
+                                        temperature=temperature,
+                                        logit_bias=None,
+                                        top_p=top_p,
+                                        n=1,
+                                        stop=stop,
+                                        max_tokens=max_tokens,
+                                        presence_penalty=presence_penalty,
+                                        frequency_penalty=frequency_penalty,
+                                        decorator=decorator,
+                                        logging_directory=logging_directory,
+                                        semaphore=None,
+                                        rate_limit_delay=evaluation_delay,
+                                        json_mode=json_mode)
+
+            ## Done afterwards, cause default evaluation instructions can change based on set_attributes()
+            evaluation_instructions = evaluation_instructions or _protocol._default_evaluation_instructions
+        
+        else:
+            evaluation_instructions = _protocol._system_message
+
+        assert isinstance(text, str) or _is_iterable_of_strings(text) or isinstance(text, ModelTranslationMessage) or _is_iterable_of_strings(text), InvalidTextInputException("text must be a string, an iterable of strings, a ModelTranslationMessage or an iterable of ModelTranslationMessages.")
+
+        _evaluation_batches = _protocol._build_evaluation_batches(text, evaluation_instructions)
+
+        _evaluation_tasks = []
+
+        for _text, _evaluation_instructions in _evaluation_batches:
+            _task = _protocol._evaluate_translation_async(_evaluation_instructions, _text)
+            _evaluation_tasks.append(_task)
+
+        _results = await asyncio.gather(*_evaluation_tasks)
+
+        _results:typing.List[ChatCompletion] = _results
+
+        assert all([hasattr(_r, "choices") for _r in _results]), ElucidateException("Malformed response received. Please try again.")
+
+        evaluation = _results if response_type in ["raw","raw_json"] else [result.choices[0].message.content for result in _results if result.choices[0].message.content is not None]
+
+        result = evaluation if isinstance(text, typing.Iterable) and not isinstance(text, str) else evaluation[0]
+
+        return result
+    
+##-------------------start-of-evaluate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def evaluate(text:str | typing.Iterable[str] | ModelTranslationMessage | typing.Iterable[ModelTranslationMessage],
+                  service:typing.Optional[typing.Literal["openai"]] = "openai",
+                  **kwargs) -> typing.Union[typing.List[str], str, 
+                                            typing.List[ChatCompletion], ChatCompletion]:
+        
+        """
+
+        Evaluates the given text using the specified service. Your text attribute should contain both the original untranslated text and the translated text.
+
+        Please see the documentation for the specific evaluation function for the service you want to use.
+
+        OpenAI: openai_evaluate()
+
+        All functions can return a list of strings or a string, depending on the input. The response type can be specified to return the raw response instead:
+        OpenAI: ChatCompletion
+
+        Parameters:
+        text (str | ModelTranslationMessage | typing.Iterable[str] | typing.Iterable[ModelTranslationMessage]) : The text to evaluate. This should be the original untranslated text along with the translated text.
+        service (string) : The service to use for evaluation.
+        **kwargs : The keyword arguments to pass to the evaluation function.
+
+        Returns:
+        result (string or list - string or ChatCompletion or list - ChatCompletion) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of ChatCompletion objects if the response type is 'raw' and input was an iterable, a ChatCompletion object otherwise.
+      
+        """
+
+        assert service in ["openai", "gemini", "anthropic"], InvalidAPITypeException("Invalid service specified. Must be 'openai', 'gemini' or 'anthropic'.")
+
+        if(service == ""):
+            pass
+
+        elif(service == "openai"):
+            return Elucidate.openai_evaluate(text, **kwargs)
+        
+##-------------------start-of-translate_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    async def evaluate_async(text:str | typing.Iterable[str],
+                              service:typing.Optional[typing.Literal["openai"]] = "openai",
+                              **kwargs) -> typing.Union[typing.List[str], str, 
+                                                        typing.List[ChatCompletion], ChatCompletion]:
+
+        
+        """
+
+        Asynchronous version of evaluate().
+        Will generally be faster for iterables. Order is preserved.
+        
+        Evaluates the given text using the specified service. Your text attribute should contain both the original untranslated text and the translated text.
+
+        Please see the documentation for the specific evaluation function for the service you want to use.
+
+        OpenAI: openai_evaluate_async()
+
+        All functions can return a list of strings or a string, depending on the input. The response type can be specified to return the raw response instead:
+        OpenAI: ChatCompletion
+
+        Parameters:
+        text (str | ModelTranslationMessage | typing.Iterable[str] | typing.Iterable[ModelTranslationMessage]) : The text to evaluate. This should be the original untranslated text along with the translated text.
+        service (string) : The service to use for evaluation.
+        **kwargs : The keyword arguments to pass to the evaluation function.
+
+        Returns:
+        result (string or list - string or ChatCompletion or list - ChatCompletion) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of ChatCompletion objects if the response type is 'raw' and input was an iterable, a ChatCompletion object otherwise.
+
+        """
+
+        assert service in ["openai", "gemini", "anthropic"], InvalidAPITypeException("Invalid service specified. Must be 'openai', 'gemini' or 'anthropic'.")
+
+        if(service == ""):
+            pass
+
+        elif(service == "openai"):
+            return await Elucidate.openai_evaluate_async(text, **kwargs)
 
 ##-------------------start-of-set_credentials()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
