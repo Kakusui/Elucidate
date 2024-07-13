@@ -9,6 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dependencies = [
+  "easytl==0.4.5"
 ]
 
 name = "elucidate"
