@@ -5,3 +5,7 @@
 from .version import VERSION as __version__  # noqa
 
 __author__ = "Kaden Bilyeu (Bikatr7) <Bikatr7@proton.me>"
+
+from .elucidate import Elucidate
+
+__all__ = ["Elucidate"]
