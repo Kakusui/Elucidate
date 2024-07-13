@@ -28,6 +28,7 @@ jobs:
 
       - name: Set Environment Variables and Run Tests
         env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LOGGING_DIRECTORY: /tmp/
         run: |
           python tests/passing.py
@@ -60,6 +61,7 @@ jobs:
 
       - name: Set Environment Variables and Run Tests
         env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LOGGING_DIRECTORY: /tmp/
         run: |
           python tests/passing.py
@@ -92,6 +94,7 @@ jobs:
 
       - name: Set Environment Variables and Run Tests
         env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LOGGING_DIRECTORY: /tmp/
         run: |
           python tests/passing.py
