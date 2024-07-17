@@ -8,4 +8,4 @@ from openai import AsyncOpenAI, OpenAI
 ## custom modules
 from .imports.easytl_importer import openai_service, gemini_service
 
-from .imports.easytl_importer import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerationConfig, GenerateContentResponse
+from .imports.easytl_importer import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse

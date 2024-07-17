@@ -9,8 +9,9 @@ import asyncio
 
 ## custom modules 
 from .protocols.openai_service_protocol import OpenAIServiceProtocol
+from .protocols.gemini_service_protocol import GeminiServiceProtocol
 
-from .util.classes import openai_service
+from .util.classes import openai_service, gemini_service
 
 from .monkeystrapper import monkeystrap
 
@@ -20,8 +21,8 @@ monkeystrap()
 ## finally importing EasyTL with modified classes
 from easytl import EasyTL
 
-from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven
-from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length, _is_iterable_of_strings
+from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerateContentResponse, AsyncGenerateContentResponse
+from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length, _is_iterable_of_strings, _validate_response_schema, _return_curated_gemini_settings
 
 from .exceptions import InvalidResponseFormatException, InvalidTextInputException, ElucidateException, InvalidAPITypeException
 
@@ -67,7 +68,7 @@ class Elucidate:
         This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
 
         Parameters:
-        text (string or iterable) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an OpenAI evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, OpenAI will retry the request twice if it fails.
         logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
@@ -183,7 +184,7 @@ class Elucidate:
         This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
 
         Parameters:
-        text (string or iterable) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.        override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an OpenAI evaluation function.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an OpenAI evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, OpenAI will retry the request twice if it fails.
         logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
@@ -264,6 +265,105 @@ class Elucidate:
 
         result = evaluation if isinstance(text, typing.Iterable) and not isinstance(text, str) else evaluation[0]
 
+        return result
+    
+##-------------------start-of-gemini_translate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def gemini_evaluate(text:typing.Union[str, typing.Iterable[str]],
+                        override_previous_settings:bool = True,
+                        decorator:typing.Callable | None = None,
+                        logging_directory:str | None = None,
+                        response_type:typing.Literal["text", "raw", "json", "raw_json"] | None = "text",
+                        response_schema:str | typing.Mapping[str, typing.Any] | None = None,
+                        translation_delay:float | None = None,
+                        translation_instructions:str | None = None,
+                        model:str="gemini-pro",
+                        temperature:float=0.5,
+                        top_p:float=0.9,
+                        top_k:int=40,
+                        stop_sequences:typing.List[str] | None=None,
+                        max_output_tokens:int | None=None,
+                        _protocol:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+                        ) -> typing.Union[typing.List[str], str, GenerateContentResponse, typing.List[GenerateContentResponse]]:
+        
+        """
+
+        Performs an evaluation on already translated text using the original untranslated text with Gemini. Your text attribute should contain both.
+
+        This function assumes that the API key has already been set.
+
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's translation.' if not specified.
+        
+        This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
+
+        Parameters:
+        text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to a Gemini evaluation function.
+        decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Gemini will retry the request twice if it fails.
+
+        ## to finish this and rename parameters/vars to evaluation
+        
+        """
+
+        if(logging_directory is not None):
+            logging.warning("Logging is currently broken. No logs will be written.")
+
+        assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
+
+        _settings = _return_curated_gemini_settings(locals())
+
+        _validate_easytl_llm_translation_settings(_settings, "gemini")
+
+        _validate_stop_sequences(stop_sequences)
+
+        _validate_text_length(text, model, service="gemini")
+
+        response_schema = _validate_response_schema(response_schema)
+
+        ## Should be done after validating the settings to reduce cost to the user
+        EasyTL.test_credentials("gemini")
+
+        json_mode = True if response_type in ["json", "raw_json"] else False
+
+        if(override_previous_settings == True):
+            _protocol._set_attributes(model=model,
+                                          system_message=translation_instructions,
+                                          temperature=temperature,
+                                          top_p=top_p,
+                                          top_k=top_k,
+                                          candidate_count=1,
+                                          stream=False,
+                                          stop_sequences=stop_sequences,
+                                          max_output_tokens=max_output_tokens,
+                                          decorator=decorator,
+                                          logging_directory=logging_directory,
+                                          semaphore=None,
+                                          rate_limit_delay=translation_delay,
+                                          json_mode=json_mode,
+                                          response_schema=response_schema)
+            
+            ## Done afterwards, cause default translation instructions can change based on set_attributes()       
+            _protocol._system_message = translation_instructions or _protocol._default_translation_instructions
+        
+        if(isinstance(text, str)):
+            _result = _protocol._evaluate_translation(text)
+            
+            assert not isinstance(_result, list) and hasattr(_result, "text"), ElucidateException("Malformed response received. Please try again.")
+            
+            result = _result if response_type in ["raw", "raw_json"] else _result.text
+
+        elif(_is_iterable_of_strings(text)):
+            
+            _results = [_protocol._evaluate_translation(_text) for _text in text]
+
+            assert isinstance(_results, list) and all([hasattr(_r, "text") for _r in _results]), ElucidateException("Malformed response received. Please try again.")
+
+            result = [_r.text for _r in _results] if response_type in ["text","json"] else _results # type: ignore
+            
+        else:
+            raise InvalidTextInputException("text must be a string or an iterable of strings.")
+        
         return result
     
 ##-------------------start-of-evaluate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
