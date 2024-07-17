@@ -3,21 +3,44 @@
 ## license that can be found in the LICENSE file.
 
 ## custom modules 
-from .util.classes import openai_service
+from .util.classes import openai_service, gemini_service
 
-from .evaluators.openai_evaluator import _default_evaluation_instructions, _evaluate_translation, internal_evaluate_translation, _build_evaluation_batches, _evaluate_translation_async, internal_evaluate_translation_async
+from .evaluators.openai_evaluator import _openai_default_evaluation_instructions, _openai_evaluate_translation, _openai_internal_evaluate_translation, _openai_build_evaluation_batches, _openai_evaluate_translation_async, _openai_internal_evaluate_translation_async
+
+from .evaluators.gemini_evaluator import _gemini_default_evaluation_instructions, _gemini_redefine_client, _gemini_evaluate_translation, _gemini_internal_evaluate_translation
+
+##-------------------start-of-monkeystrap()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def monkeystrap():
 
+    perform_openai_monkeystrapping()
+    perform_gemini_monkeystrapping()
+
+##-------------------start-of-perform_openai_monkeystrapping()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def perform_openai_monkeystrapping():
+
     ## monkeystrapping new sync functions to OpenAIService
-    setattr(openai_service.OpenAIService, "_evaluate_translation", _evaluate_translation)
-    setattr(openai_service.OpenAIService, "__evaluate_translation", internal_evaluate_translation)
+    setattr(openai_service.OpenAIService, "_evaluate_translation", _openai_evaluate_translation)
+    setattr(openai_service.OpenAIService, "__evaluate_translation", _openai_internal_evaluate_translation)
     
-    setattr(openai_service.OpenAIService, "_build_evaluation_batches", _build_evaluation_batches)
+    setattr(openai_service.OpenAIService, "_build_evaluation_batches", _openai_build_evaluation_batches)
 
     ## monkeystrapping new async functions to OpenAIService
-    setattr(openai_service.OpenAIService, "_evaluate_translation_async", _evaluate_translation_async)
-    setattr(openai_service.OpenAIService, "__evaluate_translation_async", internal_evaluate_translation_async)
+    setattr(openai_service.OpenAIService, "_evaluate_translation_async", _openai_evaluate_translation_async)
+    setattr(openai_service.OpenAIService, "__evaluate_translation_async", _openai_internal_evaluate_translation_async)
 
     ## monkeystrapping new attributes to OpenAIService
-    setattr(openai_service.OpenAIService, "_default_evaluation_instructions", _default_evaluation_instructions)
+    setattr(openai_service.OpenAIService, "_default_evaluation_instructions", _openai_default_evaluation_instructions)
+
+##-------------------start-of-perform_gemini_monkeystrapping()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def perform_gemini_monkeystrapping():
+
+    ## monkeystrapping new functions to GeminiServiceProtocol
+    setattr(gemini_service.GeminiService, "_redefine_client", _gemini_redefine_client)
+    setattr(gemini_service.GeminiService, "_evaluate_translation", _gemini_evaluate_translation)
+    setattr(gemini_service.GeminiService, "__evaluate_translation", _gemini_internal_evaluate_translation)
+
+    ## monkeystrapping new attributes to GeminiServiceProtocol
+    setattr(gemini_service.GeminiService, "_default_evaluation_instructions", _gemini_default_evaluation_instructions)

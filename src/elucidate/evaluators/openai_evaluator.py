@@ -14,12 +14,12 @@ from ..util.attributes import VALID_JSON_OPENAI_MODELS, _sync_logging_decorator,
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-_default_evaluation_instructions = SystemTranslationMessage("Please suggest a revised of the given text given it's original text and it's translation.")
+_openai_default_evaluation_instructions = SystemTranslationMessage("Please suggest a revised of the given text given it's original text and it's translation.")
 
-##-------------------start-of-_build_evaluation_batches()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_openai_build_evaluation_batches()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-def _build_evaluation_batches(text: typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
+def _openai_build_evaluation_batches(text: typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
                             instructions: typing.Optional[typing.Union[str, SystemTranslationMessage]] = None) -> typing.List[typing.Tuple[ModelTranslationMessage, SystemTranslationMessage]]:
     
     """
@@ -58,11 +58,11 @@ def _build_evaluation_batches(text: typing.Union[str, typing.Iterable[str], Mode
     
     return [(item, instructions) for item in text]
 
-##-------------------start-of-_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_openai_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
 @_sync_logging_decorator
-def _evaluate_translation(evaluation_instructions:typing.Optional[SystemTranslationMessage],
+def _openai_evaluate_translation(evaluation_instructions:typing.Optional[SystemTranslationMessage],
                             evaluation_prompt:ModelTranslationMessage,
                             service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                             ) -> ChatCompletion:
@@ -89,11 +89,11 @@ def _evaluate_translation(evaluation_instructions:typing.Optional[SystemTranslat
     decorated_function = service._decorator_to_use(service.__evaluate_translation)
     return decorated_function(evaluation_instructions, evaluation_prompt)
 
-##-------------------start-of-_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_openai_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
 @_async_logging_decorator
-async def _evaluate_translation_async(evaluation_instructions:typing.Optional[SystemTranslationMessage],
+async def _openai_evaluate_translation_async(evaluation_instructions:typing.Optional[SystemTranslationMessage],
                             evaluation_prompt:ModelTranslationMessage,
                             service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                             ) -> ChatCompletion:
@@ -120,10 +120,10 @@ async def _evaluate_translation_async(evaluation_instructions:typing.Optional[Sy
     decorated_function = service._decorator_to_use(service.__evaluate_translation_async)
     return await decorated_function(evaluation_instructions, evaluation_prompt)
 
-##-------------------start-of-internal_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_openai_internal_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-def internal_evaluate_translation(instructions:SystemTranslationMessage, 
+def _openai_internal_evaluate_translation(instructions:SystemTranslationMessage, 
                             prompt:ModelTranslationMessage,
                             service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                             ) -> ChatCompletion:
@@ -156,10 +156,10 @@ def internal_evaluate_translation(instructions:SystemTranslationMessage,
     
     return response
 
-##-------------------start-of-internal_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_openai_internal_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-async def internal_evaluate_translation_async(instructions:SystemTranslationMessage, 
+async def _openai_internal_evaluate_translation_async(instructions:SystemTranslationMessage, 
                                  prompt:ModelTranslationMessage,
                                  service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
                                  ) -> ChatCompletion:

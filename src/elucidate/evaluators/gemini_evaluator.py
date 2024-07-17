@@ -17,12 +17,12 @@ from ..util.attributes import VALID_JSON_GEMINI_MODELS as VALID_SYSTEM_MESSAGE_M
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-_default_evaluation_instructions = "Please suggest a revised of the given text given it's original text and it's translation."
+_gemini_default_evaluation_instructions = "Please suggest a revised of the given text given it's original text and it's translation."
 
-##-------------------start-of-_redefine_client()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_gemini_redefine_client()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-def _redefine_client(service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+def _gemini_redefine_client(service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
                         ) -> None:
 
     """
@@ -56,85 +56,85 @@ def _redefine_client(service:GeminiServiceProtocol = typing.cast(GeminiServicePr
     
     service._semaphore = asyncio.Semaphore(service._semaphore_value)
 
-##-------------------start-of-_redefine_client_decorator()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_gemini_redefine_client_decorator()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @staticmethod
-    def _redefine_client_decorator(func:typing.Callable,
-                                   service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
-                                   ) -> typing.Callable:
+@staticmethod
+def _gemini_redefine_client_decorator(func:typing.Callable,
+                                service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+                                ) -> typing.Callable:
 
-        """
+    """
 
-        Wraps a function to redefine the Gemini client before doing anything that requires the client.
+    Wraps a function to redefine the Gemini client before doing anything that requires the client.
 
-        Parameters:
-        func (callable) : The function to wrap.
+    Parameters:
+    func (callable) : The function to wrap.
 
-        Returns:
-        wrapper (callable) : The wrapped function.
+    Returns:
+    wrapper (callable) : The wrapped function.
 
-        """
+    """
 
-        def wrapper(*args, **kwargs):
-            service._redefine_client() 
-            return func(*args, **kwargs)
-        
-        return wrapper
+    def wrapper(*args, **kwargs):
+        service._redefine_client() 
+        return func(*args, **kwargs)
     
-##-------------------start-of-_translate_text()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    return wrapper
+
+##-------------------start-of-_gemini_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@staticmethod
+@_gemini_redefine_client_decorator
+@_sync_logging_decorator
+def _gemini_evaluate_translation(text_to_translate:str,
+                    service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+                    ) -> GenerateContentResponse:
+
+    """
+
+    Synchronously translates text.
+    Instructions default to translating whatever text is input into English.
+
+    Parameters:
+    text_to_translate (string) : The text to translate.
+
+    Returns:
+    GenerateContentResponse : The translation.
+
+    """
+
+    if(service._decorator_to_use is None):
+        return service.__evaluate_translation(text_to_translate)
+
+    _decorated_function = service._decorator_to_use(service.__evaluate_translation)
+    return _decorated_function(text_to_translate)
+
+##-------------------start-of-_gemini_internal_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@staticmethod
+def _gemini_internal_evaluate_translation(text_to_translate:str,
+                                    service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+                                    ) -> GenerateContentResponse:
+
+    """
+
+    Synchronously translates text.
+
+    Parameters:
+    text_to_translate (string) : The text to translate.
+
+    Returns:
+    _response (GenerateContentResponse) : The translation.
+
+    """
+
+    text_request = f"{text_to_translate}" if service._model in VALID_SYSTEM_MESSAGE_MODELS else f"{service._system_message}\n{text_to_translate}"
+
+    _response = service._client.generate_content(
+        contents=text_request,
+        generation_config=service._generation_config,
+        safety_settings=service._safety_settings,
+        stream=service._stream
+    )
     
-    @staticmethod
-    @_redefine_client_decorator
-    @_sync_logging_decorator
-    def _evaluate_translation(text_to_translate:str,
-                        service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
-                        ) -> GenerateContentResponse:
-
-        """
-
-        Synchronously translates text.
-        Instructions default to translating whatever text is input into English.
-
-        Parameters:
-        text_to_translate (string) : The text to translate.
-
-        Returns:
-        GenerateContentResponse : The translation.
-
-        """
-
-        if(service._decorator_to_use is None):
-            return service.__evaluate_translation(text_to_translate)
-
-        _decorated_function = service._decorator_to_use(service.__evaluate_translation)
-        return _decorated_function(text_to_translate)
-    
-##-------------------start-of-__evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    
-    @staticmethod
-    def internal_evaluate_translation(text_to_translate:str,
-                                      service:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
-                                      ) -> GenerateContentResponse:
-
-        """
-
-        Synchronously translates text.
-
-        Parameters:
-        text_to_translate (string) : The text to translate.
-
-        Returns:
-        _response (GenerateContentResponse) : The translation.
-
-        """
-
-        text_request = f"{text_to_translate}" if service._model in VALID_SYSTEM_MESSAGE_MODELS else f"{service._system_message}\n{text_to_translate}"
-
-        _response = service._client.generate_content(
-            contents=text_request,
-            generation_config=service._generation_config,
-            safety_settings=service._safety_settings,
-            stream=service._stream
-        )
-        
-        return _response
+    return _response
