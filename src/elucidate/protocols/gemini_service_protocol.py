@@ -10,7 +10,7 @@ import asyncio
 import google.generativeai as genai
 
 ## custom modules
-from ..util.classes import GenerationConfig, GenerateContentResponse
+from ..util.classes import GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse
 
 class GeminiServiceProtocol(typing.Protocol):
 
@@ -71,11 +71,20 @@ class GeminiServiceProtocol(typing.Protocol):
     def _redefine_client() -> None: ...
 
     @staticmethod
-    def _evaluate_translation(text_to_translate:str
+    def _evaluate_translation(text_to_evaluate:str
                         ) -> GenerateContentResponse: ...
     @staticmethod
-    def __evaluate_translation(text_to_translate:str
+    def __evaluate_translation(text_to_evaluate:str
                                     ) -> GenerateContentResponse: ...
+    
+    @staticmethod
+    async def _evaluate_translation_async(text_to_evaluate:str
+                                    ) -> AsyncGenerateContentResponse: ...
+    
+    @staticmethod
+    async def __evaluate_translation_async(text_to_evaluate:str
+                                    ) -> AsyncGenerateContentResponse: ...
+
     
     @staticmethod
     def _set_attributes(model:str="gemini-pro",

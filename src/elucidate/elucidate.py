@@ -267,7 +267,7 @@ class Elucidate:
 
         return result
     
-##-------------------start-of-gemini_translate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-gemini_evaluate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def gemini_evaluate(text:typing.Union[str, typing.Iterable[str]],
@@ -276,8 +276,8 @@ class Elucidate:
                         logging_directory:str | None = None,
                         response_type:typing.Literal["text", "raw", "json", "raw_json"] | None = "text",
                         response_schema:str | typing.Mapping[str, typing.Any] | None = None,
-                        translation_delay:float | None = None,
-                        translation_instructions:str | None = None,
+                        evaluation_delay:float | None = None,
+                        evaluation_instructions:str | None = None,
                         model:str="gemini-pro",
                         temperature:float=0.5,
                         top_p:float=0.9,
@@ -298,12 +298,24 @@ class Elucidate:
         This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
 
         Parameters:
-        text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        text (string | iterable[str]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to a Gemini evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Gemini will retry the request twice if it fails.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a GenerateContentResponse object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a GenerateContentResponse object, but with the content as a json-parseable string.
+        response_schema (string or mapping or None) : The schema to use for the response. If None, no schema is used. This is only used if the response type is 'json' or 'json_raw'. Elucidate only validates the schema to the extend that it is None or a valid json. It does not validate the contents of the json.4
+        evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
+        evaluation_instructions (string or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
+        model (string) : The model to use. (E.g. 'gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash', etc.)
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for translation and evaluation.
+        top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        top_k (int) : The top k sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        stop_sequences (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
+        max_output_tokens (int or None) : The maximum number of tokens to output.
 
-        ## to finish this and rename parameters/vars to evaluation
-        
+        Returns:
+        result (string or list - string or GenerateContentResponse or list - GenerateContentResponse) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of GenerateContentResponse objects if the response type is 'raw' and input was an iterable, a GenerateContentResponse object otherwise.
+
         """
 
         if(logging_directory is not None):
@@ -328,7 +340,7 @@ class Elucidate:
 
         if(override_previous_settings == True):
             _protocol._set_attributes(model=model,
-                                          system_message=translation_instructions,
+                                          system_message=evaluation_instructions,
                                           temperature=temperature,
                                           top_p=top_p,
                                           top_k=top_k,
@@ -339,12 +351,12 @@ class Elucidate:
                                           decorator=decorator,
                                           logging_directory=logging_directory,
                                           semaphore=None,
-                                          rate_limit_delay=translation_delay,
+                                          rate_limit_delay=evaluation_delay,
                                           json_mode=json_mode,
                                           response_schema=response_schema)
             
-            ## Done afterwards, cause default translation instructions can change based on set_attributes()       
-            _protocol._system_message = translation_instructions or _protocol._default_translation_instructions
+            ## Done afterwards, cause default evaluation instructions can change based on set_attributes()       
+            _protocol._system_message = evaluation_instructions or _protocol._default_translation_instructions
         
         if(isinstance(text, str)):
             _result = _protocol._evaluate_translation(text)
@@ -361,6 +373,118 @@ class Elucidate:
 
             result = [_r.text for _r in _results] if response_type in ["text","json"] else _results # type: ignore
             
+        else:
+            raise InvalidTextInputException("text must be a string or an iterable of strings.")
+        
+        return result
+    
+##-------------------start-of-gemini_evaluate_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    async def gemini_evaluate_async(text:typing.Union[str, typing.Iterable[str]],
+                                    override_previous_settings:bool = True,
+                                    decorator:typing.Callable | None = None,
+                                    logging_directory:str | None = None,
+                                    response_type:typing.Literal["text", "raw", "json", "raw_json"] | None = "text",
+                                    response_schema:str | typing.Mapping[str, typing.Any] | None = None,
+                                    semaphore:int | None = 5,
+                                    evaluation_delay:float | None = None,
+                                    evaluation_instructions:str | None = None,
+                                    model:str="gemini-pro",
+                                    temperature:float=0.5,
+                                    top_p:float=0.9,
+                                    top_k:int=40,
+                                    stop_sequences:typing.List[str] | None=None,
+                                    max_output_tokens:int | None=None,
+                                    _protocol:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
+                                    ) -> typing.Union[typing.List[str], str, AsyncGenerateContentResponse, typing.List[AsyncGenerateContentResponse]]:
+        
+        """
+
+        Asynchronous version of gemini_evaluate().
+        Will generally be faster for iterables. Order is preserved.
+
+        Performs an evaluation on already translated text using the original untranslated text with Gemini. Your text attribute should contain both.
+
+        This function assumes that the API key has already been set.
+
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's translation.' if not specified.
+
+        This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
+
+        Parameters:
+        text (string | iterable[str]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to a Gemini evaluation function.
+        decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Gemini will retry the request twice if it fails.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a GenerateContentResponse object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a GenerateContentResponse object, but with the content as a json-parseable string.
+        response_schema (string or mapping or None) : The schema to use for the response. If None, no schema is used. This is only used if the response type is 'json' or 'json_raw'. Elucidate only validates the schema to the extend that it is None or a valid json.4
+        semaphore (int) : The number of concurrent requests to make. Default is 5.
+        evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
+        evaluation_instructions (string or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
+        model (string) : The model to use. (E.g. 'gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash', etc.)
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for translation and evaluation.
+        top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        top_k (int) : The top k sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        stop_sequences (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
+        max_output_tokens (int or None) : The maximum number of tokens to output.
+
+        Returns:
+        result (string or list - string or GenerateContentResponse or list - GenerateContentResponse) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of GenerateContentResponse objects if the response type is 'raw' and input was an iterable, a GenerateContentResponse object otherwise.
+
+        """
+
+        if(logging_directory is not None):
+            logging.warning("Logging is currently broken. No logs will be written.")
+
+        assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
+
+        _settings = _return_curated_gemini_settings(locals())
+
+        _validate_easytl_llm_translation_settings(_settings, "gemini")
+
+        _validate_stop_sequences(stop_sequences)
+
+        _validate_text_length(text, model, service="gemini")
+
+        response_schema = _validate_response_schema(response_schema)
+
+        ## Should be done after validating the settings to reduce cost to the user
+        EasyTL.test_credentials("gemini")
+
+        json_mode = True if response_type in ["json", "raw_json"] else False
+
+        if(override_previous_settings == True):
+            _protocol._set_attributes(model=model,
+                                          system_message=evaluation_instructions,
+                                          temperature=temperature,
+                                          top_p=top_p,
+                                          top_k=top_k,
+                                          candidate_count=1,
+                                          stream=False,
+                                          stop_sequences=stop_sequences,
+                                          max_output_tokens=max_output_tokens,
+                                          decorator=decorator,
+                                          logging_directory=logging_directory,
+                                          semaphore=semaphore,
+                                          rate_limit_delay=evaluation_delay,
+                                          json_mode=json_mode,
+                                          response_schema=response_schema)
+            
+            ## Done afterwards, cause default evaluation instructions can change based on set_attributes()
+            _protocol._system_message = evaluation_instructions or _protocol._default_translation_instructions
+            
+        if(isinstance(text, str)):
+            _result = await _protocol._evaluate_translation_async(text)
+
+            result = _result if response_type in ["raw", "raw_json"] else _result.text
+            
+        elif(_is_iterable_of_strings(text)):
+            _tasks = [_protocol._evaluate_translation_async(_text) for _text in text]
+            _results = await asyncio.gather(*_tasks)
+
+            result = [_r.text for _r in _results] if response_type in ["text","json"] else _results # type: ignore
+
         else:
             raise InvalidTextInputException("text must be a string or an iterable of strings.")
         
