@@ -3,10 +3,10 @@
 ## license that can be found in the LICENSE file.
 
 ## third-party imports
-from easytl.services import openai_service, gemini_service
+from easytl.services import openai_service, gemini_service, anthropic_service
 
 from easytl.decorators import _sync_logging_decorator, _async_logging_decorator
-from easytl.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse
+from easytl.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse, AnthropicMessage
 from easytl.util.constants import VALID_JSON_OPENAI_MODELS, VALID_JSON_ANTHROPIC_MODELS, VALID_JSON_GEMINI_MODELS
 from easytl.exceptions import InvalidResponseFormatException
 

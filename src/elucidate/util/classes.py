@@ -4,6 +4,7 @@
 
 ## third-party imports
 from openai import AsyncOpenAI, OpenAI
+from anthropic import AsyncAnthropic, Anthropic
 
 ## custom modules
 from .imports.easytl_importer import openai_service, gemini_service
