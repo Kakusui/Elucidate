@@ -7,7 +7,7 @@ from .util.classes import openai_service, gemini_service
 
 from .evaluators.openai_evaluator import _openai_default_evaluation_instructions, _openai_evaluate_translation, _openai_internal_evaluate_translation, _openai_build_evaluation_batches, _openai_evaluate_translation_async, _openai_internal_evaluate_translation_async
 
-from .evaluators.gemini_evaluator import _gemini_default_evaluation_instructions, _gemini_redefine_client, _gemini_evaluate_translation, _gemini_internal_evaluate_translation
+from .evaluators.gemini_evaluator import _gemini_default_evaluation_instructions, _gemini_redefine_client, _gemini_evaluate_translation, _gemini_internal_evaluate_translation, _gemini_evaluate_translation_async, _gemini_internal_evaluate_translation_async
 
 ##-------------------start-of-monkeystrap()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -41,6 +41,10 @@ def perform_gemini_monkeystrapping():
     setattr(gemini_service.GeminiService, "_redefine_client", _gemini_redefine_client)
     setattr(gemini_service.GeminiService, "_evaluate_translation", _gemini_evaluate_translation)
     setattr(gemini_service.GeminiService, "__evaluate_translation", _gemini_internal_evaluate_translation)
+
+    ## monkeystrapping new async functions to GeminiServiceProtocol
+    setattr(gemini_service.GeminiService, "_evaluate_translation_async", _gemini_evaluate_translation_async)
+    setattr(gemini_service.GeminiService, "__evaluate_translation_async", _gemini_internal_evaluate_translation_async)
 
     ## monkeystrapping new attributes to GeminiServiceProtocol
     setattr(gemini_service.GeminiService, "_default_evaluation_instructions", _gemini_default_evaluation_instructions)

@@ -13,4 +13,4 @@ from easytl.exceptions import InvalidResponseFormatException
 from easytl.util.util import _is_iterable_of_strings
 from easytl.util.llm_util import _validate_easytl_llm_translation_settings, _return_curated_gemini_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_response_schema,  _return_curated_anthropic_settings, _validate_text_length, _convert_to_correct_type 
 
-from easytl.exceptions import InvalidResponseFormatException, InvalidTextInputException, EasyTLException, InvalidAPITypeException, OpenAIError
+from easytl.exceptions import InvalidResponseFormatException, InvalidTextInputException, EasyTLException, InvalidAPITypeException, OpenAIError, GoogleAPIError, AnthropicAPIError
