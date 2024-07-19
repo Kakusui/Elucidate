@@ -11,6 +11,8 @@
 
 Elucidate has a trello board [here](https://trello.com/b/uOmiU7by/elucidate).
 
+Elucidate is currently in it's second beta. Documentation is quite sparse, but the package is functional. An initial 0.0.1 release is expected by the end of July 2024.
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## **Notes**<a name="notes"></a>

@@ -4,6 +4,8 @@ import typing
 ## custom modules
 from ..attributes import _convert_to_correct_type
 
+## unused
+
 ##-------------------start-of-_return_curated_openai_settings()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def _return_curated_openai_settings(local_settings:dict[str, typing.Any]) -> dict:

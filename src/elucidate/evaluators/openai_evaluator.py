@@ -112,7 +112,7 @@ async def _openai_evaluate_translation_async(evaluation_instructions:typing.Opti
     """
     
     if(evaluation_instructions is None):
-        evaluation_instructions = service._default_translation_instructions
+        evaluation_instructions = service._default_evaluation_instructions
 
     if(service._decorator_to_use is None):
         return await service.__evaluate_translation_async(evaluation_instructions, evaluation_prompt)
