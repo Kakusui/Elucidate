@@ -512,8 +512,34 @@ class Elucidate:
                             ) -> typing.Union[typing.List[str], str, AnthropicMessage, typing.List[AnthropicMessage]]:
         
         """
-
         
+        Performs an evaluation on already translated text using the original untranslated text with Anthropic. Your text attribute should contain both.
+
+        This function assumes that the API key has already been set.
+
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's evaluation.' if not specified.
+
+        This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
+
+        Parameters:
+        text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an Anthropic evaluation function.
+        decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Anthropic will retry the request twice if it fails.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a AnthropicMessage object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a AnthropicMessage object, but with the content as a json-parseable string.
+        response_schema (string or mapping or None) : The schema to use for the response. If None, no schema is used. This is only used if the response type is 'json' or 'json_raw'. Elucidate only validates the schema to the extend that it is None or a valid json.
+        evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
+        evaluation_instructions (string or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
+        model (string) : The model to use. (E.g. 'claude-3-haiku-20240307', 'claude-3-haiku-20240307', 'claude-3-haiku-20240307', etc.)
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for evaluation and evaluation.
+        top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        top_k (int) : The top k sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        stop_sequences (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
+        max_output_tokens (int or None) : The maximum number of tokens to output.
+        
+        Returns:
+        result (string or list - string or AnthropicMessage or list - AnthropicMessage) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of AnthropicMessage objects if the response type is 'raw' and input was an iterable, a AnthropicMessage object otherwise.
+
         """
 
         if(logging_directory is not None):
@@ -609,7 +635,37 @@ class Elucidate:
                                         ) -> typing.Union[typing.List[str], str, AnthropicMessage, typing.List[AnthropicMessage]]:
         """
 
+        Asynchronous version of anthropic_evaluate().
+        Will generally be faster for iterables. Order is preserved.
+
+        Performs an evaluation on already translated text using the original untranslated text with Anthropic. Your text attribute should contain both.
+
+        This function assumes that the API key has already been set.
+
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's evaluation.' if not specified.
+
+        This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
+
+        Parameters:
+        text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
+        override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an Anthropic evaluation function.
+        decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Anthropic will retry the request twice if it fails.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a AnthropicMessage object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a AnthropicMessage object, but with the content as a json-parseable string.
+        response_schema (string or mapping or None) : The schema to use for the response. If None, no schema is used. This is only used if the response type is 'json' or 'json_raw'. Elucidate only validates the schema to the extend that it is None or a valid json.
+        semaphore (int) : The number of concurrent requests to make. Default is 5.
+        evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
+        evaluation_instructions (string or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
+        model (string) : The model to use. (E.g. 'claude-3-haiku-20240307', 'claude-3-haiku-20240307', 'claude-3-haiku-20240307', etc.)
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for evaluation and evaluation.
+        top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        top_k (int) : The top k sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
+        stop_sequences (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
+        max_output_tokens (int or None) : The maximum number of tokens to output.
         
+        Returns:
+        result (string or list - string or AnthropicMessage or list - AnthropicMessage) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of AnthropicMessage objects if the response type is 'raw' and input was an iterable, a AnthropicMessage object otherwise.
+
         """
 
         if(logging_directory is not None):
@@ -681,9 +737,11 @@ class Elucidate:
         
     @staticmethod
     def evaluate(text:str | typing.Iterable[str] | ModelTranslationMessage | typing.Iterable[ModelTranslationMessage],
-                  service:typing.Optional[typing.Literal["openai"]] = "openai",
+                  service:typing.Optional[typing.Literal["openai", "gemini", "anthropic"]],
                   **kwargs) -> typing.Union[typing.List[str], str, 
-                                            typing.List[ChatCompletion], ChatCompletion]:
+                                            typing.List[ChatCompletion], ChatCompletion,
+                                            typing.List[GenerateContentResponse], GenerateContentResponse,
+                                            typing.List[AnthropicMessage], AnthropicMessage]:
         
         """
 
@@ -692,35 +750,44 @@ class Elucidate:
         Please see the documentation for the specific evaluation function for the service you want to use.
 
         OpenAI: openai_evaluate()
+        Gemini: gemini_evaluate()
+        Anthropic: anthropic_evaluate()
 
         All functions can return a list of strings or a string, depending on the input. The response type can be specified to return the raw response instead:
         OpenAI: ChatCompletion
-
+        Gemini: GenerateContentResponse
+        Anthropic: AnthropicMessage
+        
         Parameters:
         text (str | ModelTranslationMessage | typing.Iterable[str] | typing.Iterable[ModelTranslationMessage]) : The text to evaluate. This should be the original untranslated text along with the translated text.
         service (string) : The service to use for evaluation.
         **kwargs : The keyword arguments to pass to the evaluation function.
 
         Returns:
-        result (string or list - string or ChatCompletion or list - ChatCompletion) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of ChatCompletion objects if the response type is 'raw' and input was an iterable, a ChatCompletion object otherwise.
-      
+        result (See Function Signature) : The evaluation result.
+
         """
 
         assert service in ["openai", "gemini", "anthropic"], InvalidAPITypeException("Invalid service specified. Must be 'openai', 'gemini' or 'anthropic'.")
 
-        if(service == ""):
-            pass
-
-        elif(service == "openai"):
+        if(service == "openai"):
             return Elucidate.openai_evaluate(text, **kwargs)
+        
+        elif(service == "gemini"):
+            return Elucidate.gemini_evaluate(text, **kwargs) # type: ignore
+        
+        elif(service == "anthropic"):
+            return Elucidate.anthropic_evaluate(text, **kwargs)
         
 ##-------------------start-of-translate_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
-    async def evaluate_async(text:str | typing.Iterable[str],
-                              service:typing.Optional[typing.Literal["openai"]] = "openai",
+    async def evaluate_async(text:str | typing.Iterable[str] | ModelTranslationMessage | typing.Iterable[ModelTranslationMessage],
+                              service:typing.Optional[typing.Literal["openai", "gemini", "anthropic"]],
                               **kwargs) -> typing.Union[typing.List[str], str, 
-                                                        typing.List[ChatCompletion], ChatCompletion]:
+                                                        typing.List[ChatCompletion], ChatCompletion,
+                                                        typing.List[AsyncGenerateContentResponse], AsyncGenerateContentResponse,
+                                                        typing.List[AnthropicMessage], AnthropicMessage]:
 
         
         """
@@ -733,9 +800,13 @@ class Elucidate:
         Please see the documentation for the specific evaluation function for the service you want to use.
 
         OpenAI: openai_evaluate_async()
+        Gemini: gemini_evaluate_async()
+        Anthropic: anthropic_evaluate_async()
 
         All functions can return a list of strings or a string, depending on the input. The response type can be specified to return the raw response instead:
         OpenAI: ChatCompletion
+        Gemini: AsyncGenerateContentResponse
+        Anthropic: AnthropicMessage
 
         Parameters:
         text (str | ModelTranslationMessage | typing.Iterable[str] | typing.Iterable[ModelTranslationMessage]) : The text to evaluate. This should be the original untranslated text along with the translated text.
@@ -743,17 +814,20 @@ class Elucidate:
         **kwargs : The keyword arguments to pass to the evaluation function.
 
         Returns:
-        result (string or list - string or ChatCompletion or list - ChatCompletion) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of ChatCompletion objects if the response type is 'raw' and input was an iterable, a ChatCompletion object otherwise.
+        result (See function signature) : The evaluation result.
 
         """
 
         assert service in ["openai", "gemini", "anthropic"], InvalidAPITypeException("Invalid service specified. Must be 'openai', 'gemini' or 'anthropic'.")
 
-        if(service == ""):
-            pass
-
-        elif(service == "openai"):
+        if(service == "openai"):
             return await Elucidate.openai_evaluate_async(text, **kwargs)
+        
+        elif(service == "gemini"):
+            return await Elucidate.gemini_evaluate_async(text, **kwargs) # type: ignore
+        
+        elif(service == "anthropic"):
+            return await Elucidate.anthropic_evaluate_async(text, **kwargs)
 
 ##-------------------start-of-set_credentials()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
