@@ -75,7 +75,7 @@ def _anthropic_evaluate_translation(evaluation_instructions:typing.Optional[str]
     """
     
     if(evaluation_instructions is None):
-        evaluation_instructions = _protocol._default_translation_instructions
+        evaluation_instructions = _protocol._default_evaluation_instructions
 
     if(_protocol._decorator_to_use is None):
         return _protocol.__evaluate_translation(evaluation_instructions, evaluation_prompt)
@@ -106,7 +106,7 @@ async def _anthropic_evaluate_translation_async(evaluation_instructions: typing.
     """
     
     if(evaluation_instructions is None):
-        evaluation_instructions = _protocol._default_translation_instructions
+        evaluation_instructions = _protocol._default_evaluation_instructions
 
     if(_protocol._decorator_to_use is None):
         return await _protocol.__evaluate_translation_async(evaluation_instructions, evaluation_prompt)
