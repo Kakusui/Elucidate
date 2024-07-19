@@ -9,4 +9,4 @@ from anthropic import AsyncAnthropic, Anthropic
 ## custom modules
 from .imports.easytl_importer import openai_service, gemini_service, anthropic_service
 
-from .imports.easytl_importer import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse, AnthropicMessage
+from .imports.easytl_importer import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse, AnthropicMessage, AnthropicToolUseBlock, AnthropicTextBlock

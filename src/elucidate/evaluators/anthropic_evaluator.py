@@ -15,7 +15,7 @@ from ..util.classes import ModelTranslationMessage, AnthropicMessage, anthropic_
 
 ##-------------------start-of-Attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-_openai_default_evaluation_instructions:str = "Please suggest a revised of the given text given it's original text and it's evaluation."
+_anthropic_default_evaluation_instructions:str = "Please suggest a revised of the given text given it's original text and it's evaluation."
 
 ##-------------------start-of-_anthropic_build_evaluation_batches()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -114,10 +114,10 @@ async def _anthropic_evaluate_translation_async(evaluation_instructions: typing.
     decorated_function = _protocol._decorator_to_use(_protocol.__evaluate_translation_async)
     return await decorated_function(evaluation_instructions, evaluation_prompt)
 
-##-------------------start-of-_internal_anthropic_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_anthropic_internal_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-def _internal_anthropic_evaluate_translation(instructions:str, prompt:ModelTranslationMessage,
+def _anthropic_internal_evaluate_translation(instructions:str, prompt:ModelTranslationMessage,
                      _protocol:AnthropicServiceProtocol = typing.cast(AnthropicServiceProtocol, anthropic_service.AnthropicService)) -> AnthropicMessage:
 
     """
@@ -155,10 +155,10 @@ def _internal_anthropic_evaluate_translation(instructions:str, prompt:ModelTrans
     
     return response
 
-##-------------------start-of-_internal_anthropic_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_anthropic_internal_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-async def _internal_anthropic_evaluate_translation_async(instructions:str, prompt:ModelTranslationMessage,
+async def _anthropic_internal_evaluate_translation_async(instructions:str, prompt:ModelTranslationMessage,
                                                          _protocol:AnthropicServiceProtocol = typing.cast(AnthropicServiceProtocol, anthropic_service.AnthropicService)) -> AnthropicMessage:
 
     """

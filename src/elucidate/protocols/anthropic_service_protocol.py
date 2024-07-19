@@ -13,9 +13,9 @@ from ..util.attributes import  _sync_logging_decorator, _async_logging_decorator
 class AnthropicServiceProtocol(typing.Protocol):
 
     _default_model:str = "claude-3-haiku-20240307"
-    _default_translation_instructions:str = "Please translate the following text into English."
+    _default_evaluation_instructions:str = "Please suggest a revised of the given text given it's original text and it's translation."
 
-    _system:str | None   = _default_translation_instructions 
+    _system:str | None   = _default_evaluation_instructions 
 
     _model:str = _default_model
     _temperature:float | NotGiven = NOT_GIVEN
@@ -60,7 +60,7 @@ class AnthropicServiceProtocol(typing.Protocol):
     }
 
     @staticmethod
-    def _anthropic_build_evaluation_batches(text: typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]]) -> typing.List[ModelTranslationMessage]: ...
+    def _build_evaluation_batches(text: typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]]) -> typing.List[ModelTranslationMessage]: ...
         
     @staticmethod
     @_sync_logging_decorator
@@ -83,7 +83,7 @@ class AnthropicServiceProtocol(typing.Protocol):
 
     @staticmethod
     def _set_attributes(model:str = _default_model,
-                        system:str | None = _default_translation_instructions,
+                        system:str | None = _default_evaluation_instructions,
                         temperature:float | NotGiven = NOT_GIVEN,
                         top_p:float | NotGiven = NOT_GIVEN,
                         top_k:int | NotGiven = NOT_GIVEN,

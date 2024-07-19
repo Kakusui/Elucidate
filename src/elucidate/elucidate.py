@@ -10,8 +10,9 @@ import asyncio
 ## custom modules 
 from .protocols.openai_service_protocol import OpenAIServiceProtocol
 from .protocols.gemini_service_protocol import GeminiServiceProtocol
+from .protocols.anthropic_service_protocol import AnthropicServiceProtocol
 
-from .util.classes import openai_service, gemini_service
+from .util.classes import openai_service, gemini_service, anthropic_service
 
 from .monkeystrapper import monkeystrap
 
@@ -21,8 +22,8 @@ monkeystrap()
 ## finally importing EasyTL with modified classes
 from easytl import EasyTL
 
-from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerateContentResponse, AsyncGenerateContentResponse
-from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length, _is_iterable_of_strings, _validate_response_schema, _return_curated_gemini_settings
+from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerateContentResponse, AsyncGenerateContentResponse, AnthropicMessage, AnthropicTextBlock, AnthropicToolUseBlock
+from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length, _is_iterable_of_strings, _validate_response_schema, _return_curated_gemini_settings, _return_curated_anthropic_settings
 
 from .exceptions import InvalidResponseFormatException, InvalidTextInputException, ElucidateException, InvalidAPITypeException
 
@@ -61,7 +62,7 @@ class Elucidate:
 
         This function assumes that the API key has already been set.
 
-        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's translation.' if not specified.
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's evaluation.' if not specified.
 
         Due to how OpenAI's API works, NOT_GIVEN is treated differently than None. If a parameter is set to NOT_GIVEN, it is not passed to the API. If it is set to None, it is passed to the API as None.
         
@@ -76,7 +77,7 @@ class Elucidate:
         evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
         evaluation_instructions (string or SystemTranslationMessage or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
         model (string) : The model to use. (E.g. 'gpt-4', 'gpt-3.5-turbo-0125', 'gpt-4o', etc.)
-        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for translation and evaluation.
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for evaluation and evaluation.
         top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
         stop (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
         max_tokens (int or None) : The maximum number of tokens to output.
@@ -142,7 +143,7 @@ class Elucidate:
             
             evaluations.append(evaluation)
         
-        ## If originally a single text was provided, return a single translation instead of a list
+        ## If originally a single text was provided, return a single evaluation instead of a list
         result = evaluations if isinstance(text, typing.Iterable) and not isinstance(text, str) else evaluations[0]
         
         return result
@@ -177,7 +178,7 @@ class Elucidate:
 
         This function assumes that the API key has already been set.
 
-        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's translation.' if not specified.
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's evaluation.' if not specified.
 
         Due to how OpenAI's API works, NOT_GIVEN is treated differently than None. If a parameter is set to NOT_GIVEN, it is not passed to the API. If it is set to None, it is passed to the API as None.
         
@@ -193,7 +194,7 @@ class Elucidate:
         evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
         evaluation_instructions (string or SystemTranslationMessage or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
         model (string) : The model to use. (E.g. 'gpt-4', 'gpt-3.5-turbo-0125', 'gpt-4o', etc.)
-        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for translation and evaluation.
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for evaluation and evaluation.
         top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
         stop (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
         max_tokens (int or None) : The maximum number of tokens to output.
@@ -293,7 +294,7 @@ class Elucidate:
 
         This function assumes that the API key has already been set.
 
-        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's translation.' if not specified.
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's evaluation.' if not specified.
         
         This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
 
@@ -307,7 +308,7 @@ class Elucidate:
         evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
         evaluation_instructions (string or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
         model (string) : The model to use. (E.g. 'gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash', etc.)
-        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for translation and evaluation.
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for evaluation and evaluation.
         top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
         top_k (int) : The top k sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
         stop_sequences (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
@@ -356,7 +357,7 @@ class Elucidate:
                                           response_schema=response_schema)
             
             ## Done afterwards, cause default evaluation instructions can change based on set_attributes()       
-            _protocol._system_message = evaluation_instructions or _protocol._default_translation_instructions
+            _protocol._system_message = evaluation_instructions or _protocol._default_evaluation_instructions
         
         if(isinstance(text, str)):
             _result = _protocol._evaluate_translation(text)
@@ -408,7 +409,7 @@ class Elucidate:
 
         This function assumes that the API key has already been set.
 
-        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's translation.' if not specified.
+        Evaluation instructions default to 'Please suggest a revised of the given text given it's original text and it's evaluation.' if not specified.
 
         This function is not for use for real-time evaluation, nor for generating multiple response candidates. Another function may be implemented for this given demand.
 
@@ -423,7 +424,7 @@ class Elucidate:
         evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
         evaluation_instructions (string or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
         model (string) : The model to use. (E.g. 'gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash', etc.)
-        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for translation and evaluation.
+        temperature (float) : The temperature to use. The higher the temperature, the more creative the output. Lower temperatures are typically better for evaluation and evaluation.
         top_p (float) : The nucleus sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
         top_k (int) : The top k sampling probability. The higher the value, the more words are considered for the next token. Generally, alter this or temperature, not both.
         stop_sequences (list or None) : String sequences that will cause the model to stop evaluation if encountered, generally useless.
@@ -472,7 +473,7 @@ class Elucidate:
                                           response_schema=response_schema)
             
             ## Done afterwards, cause default evaluation instructions can change based on set_attributes()
-            _protocol._system_message = evaluation_instructions or _protocol._default_translation_instructions
+            _protocol._system_message = evaluation_instructions or _protocol._default_evaluation_instructions
             
         if(isinstance(text, str)):
             _result = await _protocol._evaluate_translation_async(text)
@@ -489,6 +490,192 @@ class Elucidate:
             raise InvalidTextInputException("text must be a string or an iterable of strings.")
         
         return result
+
+##-------------------start-of-anthropic_evaluate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
+
+    @staticmethod
+    def anthropic_evaluate(text:typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
+                            override_previous_settings:bool = True,
+                            decorator:typing.Callable | None = None,
+                            logging_directory:str | None = None,
+                            response_type:typing.Literal["text", "raw", "json", "raw_json"] | None = "text",
+                            response_schema:str | typing.Mapping[str, typing.Any] | None = None,
+                            evaluation_delay:float | None = None,
+                            evaluation_instructions:str | None = None,
+                            model:str="claude-3-haiku-20240307",
+                            temperature:float | NotGiven = NOT_GIVEN,
+                            top_p:float | NotGiven = NOT_GIVEN,
+                            top_k:int | NotGiven = NOT_GIVEN,
+                            stop_sequences:typing.List[str] | NotGiven = NOT_GIVEN,
+                            max_output_tokens:int | NotGiven = NOT_GIVEN,
+                            _protocol:AnthropicServiceProtocol = typing.cast(AnthropicServiceProtocol, anthropic_service.AnthropicService)
+                            ) -> typing.Union[typing.List[str], str, AnthropicMessage, typing.List[AnthropicMessage]]:
+        
+        """
+
+        
+        """
+
+        if(logging_directory is not None):
+            logging.warning("Logging is currently broken. No logs will be written.")
+
+        assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
+
+        _settings = _return_curated_anthropic_settings(locals())
+
+        _validate_easytl_llm_translation_settings(_settings, "anthropic")
+
+        _validate_stop_sequences(stop_sequences)
+
+        _validate_text_length(text, model, service="anthropic")
+
+        response_schema = _validate_response_schema(response_schema)
+
+        ## Should be done after validating the settings to reduce cost to the user
+        EasyTL.test_credentials("anthropic")
+
+        json_mode = True if response_type in ["json", "raw_json"] else False
+
+        if(override_previous_settings == True):
+            _protocol._set_attributes(model=model,
+                                            system=evaluation_instructions,
+                                            temperature=temperature,
+                                            top_p=top_p,
+                                            top_k=top_k,
+                                            stop_sequences=stop_sequences,
+                                            stream=False,
+                                            max_tokens=max_output_tokens,
+                                            decorator=decorator,
+                                            logging_directory=logging_directory,
+                                            semaphore=None,
+                                            rate_limit_delay=evaluation_delay,
+                                            json_mode=json_mode,
+                                            response_schema=response_schema)
+            
+            ## Done afterwards, cause default evaluation instructions can change based on set_attributes()
+            _protocol._system = evaluation_instructions or _protocol._default_evaluation_instructions
+
+        assert isinstance(text, str) or _is_iterable_of_strings(text) or isinstance(text, ModelTranslationMessage) or _is_iterable_of_strings(text), InvalidTextInputException("text must be a string, an iterable of strings, a ModelTranslationMessage or an iterable of ModelTranslationMessages.")
+
+        _evaluation_batches = _protocol._build_evaluation_batches(text)
+
+        _evaluation = []
+
+        for _text in _evaluation_batches:
+
+            _result = _protocol._evaluate_translation(_protocol._system, _text)
+
+            assert not isinstance(_result, list) and hasattr(_result, "content"), ElucidateException("Malformed response received. Please try again.")
+
+            if(response_type in ["raw", "raw_json"]):
+                evaluation = _result
+
+            ## response structure can vary if tools are used
+            else:
+                content = _result.content
+
+                if(isinstance(content[0], AnthropicTextBlock)):
+                    evaluation = content[0].text
+
+                elif(isinstance(content[0], AnthropicToolUseBlock)):
+                    evaluation = content[0].input
+                            
+            _evaluation.append(evaluation)
+
+        ## If originally a single text was provided, return a single evaluation instead of a list
+        result = _evaluation if isinstance(text, typing.Iterable) and not isinstance(text, str) else _evaluation[0]
+
+        return result
+    
+##-------------------start-of-anthropic_translate_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    async def anthropic_translate_async(text:typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
+                                        override_previous_settings:bool = True,
+                                        decorator:typing.Callable | None = None,
+                                        logging_directory:str | None = None,
+                                        response_type:typing.Literal["text", "raw", "json", "raw_json"] | None = "text",
+                                        response_schema:str | typing.Mapping[str, typing.Any] | None = None,
+                                        semaphore:int | None = 5,
+                                        evaluation_delay:float | None = None,
+                                        evaluation_instructions:str | None = None,
+                                        model:str="claude-3-haiku-20240307",
+                                        temperature:float | NotGiven = NOT_GIVEN,
+                                        top_p:float | NotGiven = NOT_GIVEN,
+                                        top_k:int | NotGiven = NOT_GIVEN,
+                                        stop_sequences:typing.List[str] | NotGiven = NOT_GIVEN,
+                                        max_output_tokens:int | NotGiven = NOT_GIVEN,
+                                        _protocol:AnthropicServiceProtocol = typing.cast(AnthropicServiceProtocol, anthropic_service.AnthropicService)
+                                        ) -> typing.Union[typing.List[str], str, AnthropicMessage, typing.List[AnthropicMessage]]:
+        """
+
+        
+        """
+
+        if(logging_directory is not None):
+            logging.warning("Logging is currently broken. No logs will be written.")
+
+        assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
+
+        _settings = _return_curated_anthropic_settings(locals())
+
+        _validate_easytl_llm_translation_settings(_settings, "anthropic")
+
+        _validate_stop_sequences(stop_sequences)
+
+        _validate_text_length(text, model, service="anthropic")
+
+        response_schema = _validate_response_schema(response_schema)
+
+        ## Should be done after validating the settings to reduce cost to the user
+        EasyTL.test_credentials("anthropic")
+
+        json_mode = True if response_type in ["json", "raw_json"] else False
+
+        if(override_previous_settings == True):
+            _protocol._set_attributes(model=model,
+                                            system=evaluation_instructions,
+                                            temperature=temperature,
+                                            top_p=top_p,
+                                            top_k=top_k,
+                                            stop_sequences=stop_sequences,
+                                            stream=False,
+                                            max_tokens=max_output_tokens,
+                                            decorator=decorator,
+                                            logging_directory=logging_directory,
+                                            semaphore=semaphore,
+                                            rate_limit_delay=evaluation_delay,
+                                            json_mode=json_mode,
+                                            response_schema=response_schema)
+            
+            ## Done afterwards, cause default evaluation instructions can change based on set_attributes()
+            _protocol._system = evaluation_instructions or _protocol._default_evaluation_instructions
+        
+        assert isinstance(text, str) or _is_iterable_of_strings(text) or isinstance(text, ModelTranslationMessage) or _is_iterable_of_strings(text), InvalidTextInputException("text must be a string, an iterable of strings, a ModelTranslationMessage or an iterable of ModelTranslationMessages.")
+
+        _evaluation_batches = _protocol._build_evaluation_batches(text)
+
+        _evaluation_tasks = []
+
+        for _text in _evaluation_batches:
+            _task = _protocol._evaluate_translation_async(_protocol._system, _text)
+            _evaluation_tasks.append(_task)
+
+        _results = await asyncio.gather(*_evaluation_tasks)
+
+        _results:typing.List[AnthropicMessage] = _results
+
+        assert all([hasattr(_r, "content") for _r in _results]), ElucidateException("Malformed response received. Please try again.")
+
+        if(response_type in ["raw", "raw_json"]):
+            evaluation = _results
+
+        else:
+            evaluation = [result.content[0].input if isinstance(result.content[0], AnthropicToolUseBlock) else result.content[0].text for result in _results]
+        
+        result = evaluation if isinstance(text, typing.Iterable) and not isinstance(text, str) else evaluation[0]
+
+        return result # type: ignore
     
 ##-------------------start-of-evaluate()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         

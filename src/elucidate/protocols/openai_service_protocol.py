@@ -12,8 +12,6 @@ from ..util.attributes import  _sync_logging_decorator, _async_logging_decorator
 
 class OpenAIServiceProtocol(typing.Protocol):
 
-    _default_translation_instructions:typing.ClassVar[SystemTranslationMessage]
-
     _default_evaluation_instructions:typing.ClassVar[SystemTranslationMessage] = SystemTranslationMessage("Please suggest a revised of the given text given it's original text and it's translation.")
     _system_message:typing.Optional[typing.Union[SystemTranslationMessage, str]] = _default_evaluation_instructions
 

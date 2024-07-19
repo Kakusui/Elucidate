@@ -14,10 +14,10 @@ from ..util.classes import GenerationConfig, GenerateContentResponse, AsyncGener
 
 class GeminiServiceProtocol(typing.Protocol):
 
-    _default_translation_instructions:str = "Please translate the following text into English."
+    _default_evaluation_instructions:str = "Please suggest a revised of the given text given it's original text and it's translation."
     _default_model:str = "gemini-pro"
 
-    _system_message = _default_translation_instructions
+    _system_message = _default_evaluation_instructions
 
     _model:str = _default_model
     _temperature:float = 0.5
@@ -88,7 +88,7 @@ class GeminiServiceProtocol(typing.Protocol):
     
     @staticmethod
     def _set_attributes(model:str="gemini-pro",
-                        system_message:str | None = _default_translation_instructions,
+                        system_message:str | None = _default_evaluation_instructions,
                         temperature:float=0.5,
                         top_p:float=0.9,
                         top_k:int=40,
