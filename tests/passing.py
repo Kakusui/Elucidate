@@ -85,6 +85,15 @@ async def main():
 
     print(await Elucidate.gemini_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="gemini-pro", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
 
+    print("-----------------------------------------------Anthropic-----------------------------------------------")
+
+    print("-----------------------------------------------Text response-----------------------------------------------")
+
+    print(Elucidate.anthropic_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="claude-3-haiku-20240307", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
+
+    print(await Elucidate.anthropic_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="claude-3-haiku-20240307", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
+    
+
 ##-------------------end-of-main()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if(__name__ == "__main__"):

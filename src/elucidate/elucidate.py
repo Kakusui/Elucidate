@@ -587,10 +587,10 @@ class Elucidate:
 
         return result
     
-##-------------------start-of-anthropic_translate_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-anthropic_evaluate_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    async def anthropic_translate_async(text:typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
+    async def anthropic_evaluate_async(text:typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],
                                         override_previous_settings:bool = True,
                                         decorator:typing.Callable | None = None,
                                         logging_directory:str | None = None,
