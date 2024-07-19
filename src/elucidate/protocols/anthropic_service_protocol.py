@@ -8,7 +8,6 @@ import asyncio
 
 ## custom modules
 from ..util.classes import NOT_GIVEN, NotGiven, Anthropic, AsyncAnthropic, ModelTranslationMessage, AnthropicMessage
-from ..util.attributes import  _sync_logging_decorator, _async_logging_decorator
 
 class AnthropicServiceProtocol(typing.Protocol):
 
@@ -63,12 +62,10 @@ class AnthropicServiceProtocol(typing.Protocol):
     def _build_evaluation_batches(text: typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]]) -> typing.List[ModelTranslationMessage]: ...
         
     @staticmethod
-    @_sync_logging_decorator
     def _evaluate_translation(evaluation_instructions:typing.Optional[str],
                                 evaluation_prompt:ModelTranslationMessage,
                                 ) -> AnthropicMessage: ...
     @staticmethod
-    @_async_logging_decorator
     async def _evaluate_translation_async(evaluation_instructions:typing.Optional[str],
                             evaluation_prompt:ModelTranslationMessage
                             ) -> AnthropicMessage: ...

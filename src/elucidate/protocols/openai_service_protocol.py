@@ -8,7 +8,6 @@ import asyncio
 
 ## custom modules
 from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, OpenAI, AsyncOpenAI
-from ..util.attributes import  _sync_logging_decorator, _async_logging_decorator
 
 class OpenAIServiceProtocol(typing.Protocol):
 
@@ -38,12 +37,10 @@ class OpenAIServiceProtocol(typing.Protocol):
                                 instructions: typing.Optional[typing.Union[str, SystemTranslationMessage]] = None) -> typing.List[typing.Tuple[ModelTranslationMessage, SystemTranslationMessage]]: ...
 
     @staticmethod
-    @_sync_logging_decorator
     def _evaluate_translation(evaluation_instructions:typing.Optional[SystemTranslationMessage],
                                 evaluation_prompt:ModelTranslationMessage,
                                 ) -> ChatCompletion: ...
     @staticmethod
-    @_async_logging_decorator
     async def _evaluate_translation_async(evaluation_instructions:typing.Optional[SystemTranslationMessage],
                             evaluation_prompt:ModelTranslationMessage
                             ) -> ChatCompletion: ...

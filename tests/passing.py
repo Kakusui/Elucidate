@@ -39,7 +39,10 @@ def setup_preconditions():
 
     if(openai_api_key is None):
         openai_api_key = read_api_key("tests/openai.txt")
-        logging_directory = "tests/"
+
+        ## if any keys are not set, change logging directory to local test environment
+        script_location = os.path.dirname(os.path.realpath(__file__))
+        logging_directory = script_location
 
     if(gemini_api_key is None):
         gemini_api_key = read_api_key("tests/gemini.txt")
@@ -73,9 +76,9 @@ async def main():
 
     print("-----------------------------------------------Text response-----------------------------------------------")
 
-    print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
+    print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator, logging_directory=logging_directory))
 
-    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
+    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator, logging_directory=logging_directory))
 
     print("-----------------------------------------------Gemini-----------------------------------------------")
 

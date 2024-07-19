@@ -39,7 +39,10 @@ def setup_preconditions():
 
     if(openai_api_key is None):
         openai_api_key = read_api_key("tests/openai.txt")
-        logging_directory = "tests/"
+
+        ## if any keys are not set, change logging directory to local test environment
+        script_location = os.path.dirname(os.path.realpath(__file__))
+        logging_directory = script_location
 
     if(gemini_api_key is None):
         gemini_api_key = read_api_key("tests/gemini.txt")
