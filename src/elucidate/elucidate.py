@@ -3,7 +3,6 @@
 ## license that can be found in the LICENSE file.
 
 ## built-in libraries
-import logging
 import typing
 import asyncio
 
@@ -73,7 +72,7 @@ class Elucidate:
         text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an OpenAI evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, OpenAI will retry the request twice if it fails.
-        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist.
         response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a ChatCompletion object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a ChatCompletion object, but with the content as a json-parseable string.
         evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
         evaluation_instructions (string or SystemTranslationMessage or None) : The evaluation instructions to use. If None, the default system message is used. If you plan on using the json response type, you must specify that you want a json output and it's format in the instructions. The default system message will ask for a generic json if the response type is json.
@@ -89,9 +88,6 @@ class Elucidate:
         result (string or list - string or ChatCompletion or list - ChatCompletion) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of ChatCompletion objects if the response type is 'raw' and input was an iterable, a ChatCompletion object otherwise.
 
         """
-        
-        if(logging_directory is not None):
-            logging.warning("Logging is currently broken. No logs will be written.")
         
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
         
@@ -189,7 +185,7 @@ class Elucidate:
         text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.        override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an OpenAI evaluation function.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an OpenAI evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, OpenAI will retry the request twice if it fails.
-        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist.
         response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a ChatCompletion object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a ChatCompletion object, but with the content as a json-parseable string.
         semaphore (int) : The number of concurrent requests to make. Default is 5.
         evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
@@ -206,10 +202,7 @@ class Elucidate:
         result (string or list - string or ChatCompletion or list - ChatCompletion) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of ChatCompletion objects if the response type is 'raw' and input was an iterable, a ChatCompletion object otherwise.
 
         """
-        
-        if(logging_directory is not None):
-            logging.warning("Logging is currently broken. No logs will be written.")
-        
+                
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
         
         _settings = _return_curated_openai_settings(locals())
@@ -303,7 +296,7 @@ class Elucidate:
         text (string | iterable[str]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to a Gemini evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Gemini will retry the request twice if it fails.
-        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist.
         response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a GenerateContentResponse object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a GenerateContentResponse object, but with the content as a json-parseable string.
         response_schema (string or mapping or None) : The schema to use for the response. If None, no schema is used. This is only used if the response type is 'json' or 'json_raw'. Elucidate only validates the schema to the extend that it is None or a valid json. It does not validate the contents of the json.4
         evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
@@ -319,9 +312,6 @@ class Elucidate:
         result (string or list - string or GenerateContentResponse or list - GenerateContentResponse) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of GenerateContentResponse objects if the response type is 'raw' and input was an iterable, a GenerateContentResponse object otherwise.
 
         """
-
-        if(logging_directory is not None):
-            logging.warning("Logging is currently broken. No logs will be written.")
 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
 
@@ -418,7 +408,7 @@ class Elucidate:
         text (string | iterable[str]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to a Gemini evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Gemini will retry the request twice if it fails.
-        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist.
         response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a GenerateContentResponse object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a GenerateContentResponse object, but with the content as a json-parseable string.
         response_schema (string or mapping or None) : The schema to use for the response. If None, no schema is used. This is only used if the response type is 'json' or 'json_raw'. Elucidate only validates the schema to the extend that it is None or a valid json.4
         semaphore (int) : The number of concurrent requests to make. Default is 5.
@@ -435,9 +425,6 @@ class Elucidate:
         result (string or list - string or GenerateContentResponse or list - GenerateContentResponse) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of GenerateContentResponse objects if the response type is 'raw' and input was an iterable, a GenerateContentResponse object otherwise.
 
         """
-
-        if(logging_directory is not None):
-            logging.warning("Logging is currently broken. No logs will be written.")
 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
 
@@ -526,7 +513,7 @@ class Elucidate:
         text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an Anthropic evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Anthropic will retry the request twice if it fails.
-        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist.
         response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a AnthropicMessage object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a AnthropicMessage object, but with the content as a json-parseable string.
         response_schema (string or mapping or None) : The schema to use for the response. If None, no schema is used. This is only used if the response type is 'json' or 'json_raw'. Elucidate only validates the schema to the extend that it is None or a valid json.
         evaluation_delay (float or None) : If text is an iterable, the delay between each evaluation. Default is none. This is more important for asynchronous evaluations where a semaphore alone may not be sufficient.
@@ -542,9 +529,6 @@ class Elucidate:
         result (string or list - string or AnthropicMessage or list - AnthropicMessage) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of AnthropicMessage objects if the response type is 'raw' and input was an iterable, a AnthropicMessage object otherwise.
 
         """
-
-        if(logging_directory is not None):
-            logging.warning("Logging is currently broken. No logs will be written.")
 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
 
@@ -651,7 +635,7 @@ class Elucidate:
         text (string | ModelTranslationMessage | iterable[str] | iterable[ModelTranslationMessage]) : The text to evaluate.  This should be the original untranslated text along with the translated text.
         override_previous_settings (bool) : Whether to override the previous settings that were used during the last call to an Anthropic evaluation function.
         decorator (callable or None) : The decorator to use when evaluating. Typically for exponential backoff retrying. If this is None, Anthropic will retry the request twice if it fails.
-        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist. Currently broken.
+        logging_directory (string or None) : The directory to log to. If None, no logging is done. This'll append the text result and some function information to a file in the specified directory. File is created if it doesn't exist.
         response_type (literal["text", "raw", "json", "raw_json"]) : The type of response to return. 'text' returns the evaluated text, 'raw' returns the raw response, a AnthropicMessage object, 'json' returns a json-parseable string. 'raw_json' returns the raw response, a AnthropicMessage object, but with the content as a json-parseable string.
         response_schema (string or mapping or None) : The schema to use for the response. If None, no schema is used. This is only used if the response type is 'json' or 'json_raw'. Elucidate only validates the schema to the extend that it is None or a valid json.
         semaphore (int) : The number of concurrent requests to make. Default is 5.
@@ -668,9 +652,6 @@ class Elucidate:
         result (string or list - string or AnthropicMessage or list - AnthropicMessage) : The evaluation result. A list of strings if the input was an iterable, a string otherwise. A list of AnthropicMessage objects if the response type is 'raw' and input was an iterable, a AnthropicMessage object otherwise.
 
         """
-
-        if(logging_directory is not None):
-            logging.warning("Logging is currently broken. No logs will be written.")
 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
 
