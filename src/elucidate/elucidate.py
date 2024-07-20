@@ -23,7 +23,8 @@ monkeystrap()
 from easytl import EasyTL
 
 from .util.classes import ModelTranslationMessage, SystemTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, GenerateContentResponse, AsyncGenerateContentResponse, AnthropicMessage, AnthropicTextBlock, AnthropicToolUseBlock
-from .util.attributes import _validate_easytl_llm_translation_settings, _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length, _is_iterable_of_strings, _validate_response_schema, _return_curated_gemini_settings, _return_curated_anthropic_settings
+from .util.attributes import _return_curated_openai_settings, _validate_stop_sequences, _validate_text_length, _is_iterable_of_strings, _validate_response_schema, _return_curated_gemini_settings, _return_curated_anthropic_settings
+from .util.llm_helper.validators import _validate_elucidate_llm_translation_settings
 
 from .exceptions import InvalidResponseFormatException, InvalidTextInputException, ElucidateException, InvalidAPITypeException
 
@@ -96,7 +97,7 @@ class Elucidate:
         
         _settings = _return_curated_openai_settings(locals())
 
-        _validate_easytl_llm_translation_settings(_settings, "openai")
+        _validate_elucidate_llm_translation_settings(_settings, "openai")
 
         _validate_stop_sequences(stop)
 
@@ -213,7 +214,7 @@ class Elucidate:
         
         _settings = _return_curated_openai_settings(locals())
 
-        _validate_easytl_llm_translation_settings(_settings, "openai")
+        _validate_elucidate_llm_translation_settings(_settings, "openai")
 
         _validate_stop_sequences(stop)
 
@@ -326,7 +327,7 @@ class Elucidate:
 
         _settings = _return_curated_gemini_settings(locals())
 
-        _validate_easytl_llm_translation_settings(_settings, "gemini")
+        _validate_elucidate_llm_translation_settings(_settings, "gemini")
 
         _validate_stop_sequences(stop_sequences)
 
@@ -442,7 +443,7 @@ class Elucidate:
 
         _settings = _return_curated_gemini_settings(locals())
 
-        _validate_easytl_llm_translation_settings(_settings, "gemini")
+        _validate_elucidate_llm_translation_settings(_settings, "gemini")
 
         _validate_stop_sequences(stop_sequences)
 
@@ -549,7 +550,7 @@ class Elucidate:
 
         _settings = _return_curated_anthropic_settings(locals())
 
-        _validate_easytl_llm_translation_settings(_settings, "anthropic")
+        _validate_elucidate_llm_translation_settings(_settings, "anthropic")
 
         _validate_stop_sequences(stop_sequences)
 
@@ -675,7 +676,7 @@ class Elucidate:
 
         _settings = _return_curated_anthropic_settings(locals())
 
-        _validate_easytl_llm_translation_settings(_settings, "anthropic")
+        _validate_elucidate_llm_translation_settings(_settings, "anthropic")
 
         _validate_stop_sequences(stop_sequences)
 
