@@ -5,8 +5,6 @@
 ## built-in libraries
 import asyncio
 import os
-import sys
-import time
 import logging
 
 ## third-party libraries
@@ -70,7 +68,7 @@ async def main():
 
     ## probably self explanatory from this point on
 
-    decorator = backoff.on_exception(backoff.expo, exception=(OpenAIError), logger=logging.getLogger())
+    decorator = backoff.on_exception(backoff.expo, exception=(OpenAIError, GoogleAPIError, AnthropicAPIError), logger=logging.getLogger())
 
     print("------------------------------------------------OpenAI------------------------------------------------")
 

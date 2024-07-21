@@ -5,8 +5,6 @@
 ## built-in libraries
 import asyncio
 import os
-import sys
-import time
 import logging
 
 ## third-party libraries
@@ -14,7 +12,7 @@ import backoff
 
 from elucidate import Elucidate
 
-from elucidate.exceptions import OpenAIError, GoogleAPIError, AnthropicAPIError
+from elucidate.exceptions import OpenAIError
 
 ##-------------------start-of-read_api_key()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -94,7 +94,6 @@ def _gemini_evaluate_translation(text_to_evaluate:str,
     """
 
     Synchronously evaluates the text using the Gemini API.
-    Instructions default to evaluating the text in the context of the system message.
 
     Parameters:
     text_to_evaluate (string) : The text to evaluate.

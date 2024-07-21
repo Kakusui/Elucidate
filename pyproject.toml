@@ -9,11 +9,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dependencies = [
-  "easytl==0.4.6"
+  "easytl==0.4.7"
 ]
 
 name = "elucidate"
-version = "v0.0.1-beta-2"
+version = "v0.0.1"
 authors = [
   { name="Bikatr7", email="Bikatr7@proton.me" },
 ]

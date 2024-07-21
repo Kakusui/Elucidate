@@ -53,7 +53,7 @@ def _anthropic_build_evaluation_batches(text:typing.Union[str, typing.Iterable[s
     
     return text
 
-##-------------------start-of-_anthropic_evaluate_text()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-_anthropic_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
 @_sync_logging_decorator
@@ -118,7 +118,8 @@ async def _anthropic_evaluate_translation_async(evaluation_instructions: typing.
 ##-------------------start-of-_anthropic_internal_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-def _anthropic_internal_evaluate_translation(instructions:str, prompt:ModelTranslationMessage,
+def _anthropic_internal_evaluate_translation(instructions:str, 
+                                             prompt:ModelTranslationMessage,
                      _protocol:AnthropicServiceProtocol = typing.cast(AnthropicServiceProtocol, anthropic_service.AnthropicService)) -> AnthropicMessage:
 
     """
