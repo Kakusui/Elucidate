@@ -14,30 +14,30 @@ class AnthropicServiceProtocol(typing.Protocol):
     _default_model:str = "claude-3-haiku-20240307"
     _default_evaluation_instructions:str = "Please suggest a revised of the given text given it's original text and it's translation."
 
-    _system:str | None   = _default_evaluation_instructions 
+    _system:str | None
 
-    _model:str = _default_model
-    _temperature:float | NotGiven = NOT_GIVEN
-    _top_p:float | NotGiven = NOT_GIVEN
-    _top_k:int | NotGiven = NOT_GIVEN
-    _stream:typing.Literal[False] | NotGiven = False
-    _stop_sequences:typing.List[str] | NotGiven = NOT_GIVEN
-    _max_tokens:int | NotGiven = NOT_GIVEN
+    _model:str
+    _temperature:float | NotGiven
+    _top_p:float | NotGiven
+    _top_k:int | NotGiven
+    _stream:typing.Literal[False] | NotGiven
+    _stop_sequences:typing.List[str] | NotGiven
+    _max_tokens:int | NotGiven
 
-    _semaphore_value:int = 5
-    _semaphore:asyncio.Semaphore = asyncio.Semaphore(_semaphore_value)
+    _semaphore_value:int
+    _semaphore:asyncio.Semaphore
 
-    _sync_client = Anthropic(api_key="DummyKey")
-    _async_client = AsyncAnthropic(api_key="DummyKey")
+    _sync_client:Anthropic
+    _async_client:AsyncAnthropic
 
-    _rate_limit_delay:float | None = None
+    _rate_limit_delay:float | None
 
-    _decorator_to_use:typing.Union[typing.Callable, None] = None
+    _decorator_to_use:typing.Union[typing.Callable, None]
 
-    _log_directory:str | None = None
+    _log_directory:str | None
 
-    _json_mode:bool = False
-    _response_schema:typing.Mapping[str, typing.Any] | None = None
+    _json_mode:bool
+    _response_schema:typing.Mapping[str, typing.Any] | None
     
     _json_tool = {
         "name": "format_to_json",
@@ -75,8 +75,8 @@ class AnthropicServiceProtocol(typing.Protocol):
                                prompt: ModelTranslationMessage) -> AnthropicMessage: ...
     
     @staticmethod
-    async def __evaluate_translation_async(instructions: str,
-                                    prompt: ModelTranslationMessage) -> AnthropicMessage: ...
+    async def __evaluate_translation_async(instructions:str,
+                                    prompt:ModelTranslationMessage) -> AnthropicMessage: ...
 
     @staticmethod
     def _set_attributes(model:str = _default_model,

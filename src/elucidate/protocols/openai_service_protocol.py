@@ -14,13 +14,13 @@ class OpenAIServiceProtocol(typing.Protocol):
     _default_evaluation_instructions:typing.ClassVar[SystemTranslationMessage] = SystemTranslationMessage("Please suggest a revised of the given text given it's original text and it's translation.")
     _system_message:typing.Optional[typing.Union[SystemTranslationMessage, str]] = _default_evaluation_instructions
 
-    _log_directory:str | None = None
+    _log_directory:str | None
 
     _decorator_to_use: typing.Union[typing.Callable, None]
 
     _json_mode:bool
 
-    _rate_limit_delay:float | None = None
+    _rate_limit_delay:float | None 
 
     _default_model:str = "gpt-4"
     _model:str
@@ -28,9 +28,8 @@ class OpenAIServiceProtocol(typing.Protocol):
     _sync_client:OpenAI
     _async_client:AsyncOpenAI
 
-    _semaphore_value:int = 5
-    _semaphore:asyncio.Semaphore = asyncio.Semaphore(_semaphore_value)
-
+    _semaphore_value:int 
+    _semaphore:asyncio.Semaphore
 
     @staticmethod
     def _build_evaluation_batches(text: typing.Union[str, typing.Iterable[str], ModelTranslationMessage, typing.Iterable[ModelTranslationMessage]],

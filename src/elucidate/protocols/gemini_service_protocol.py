@@ -17,28 +17,28 @@ class GeminiServiceProtocol(typing.Protocol):
     _default_evaluation_instructions:str = "Please suggest a revised of the given text given it's original text and it's translation."
     _default_model:str = "gemini-pro"
 
-    _system_message = _default_evaluation_instructions
+    _system_message:str | None
 
-    _model:str = _default_model
-    _temperature:float = 0.5
-    _top_p:float = 0.9
-    _top_k:int = 40
-    _candidate_count:int = 1
-    _stream:bool = False
-    _stop_sequences:typing.List[str] | None = None
-    _max_output_tokens:int | None = None
+    _model:str
+    _temperature:float
+    _top_p:float
+    _top_k:int 
+    _candidate_count:int 
+    _stream:bool 
+    _stop_sequences:typing.List[str] | None 
+    _max_output_tokens:int | None 
 
     _client:genai.GenerativeModel
     _generation_config:GenerationConfig
 
-    _semaphore_value:int = 5
-    _semaphore:asyncio.Semaphore = asyncio.Semaphore(_semaphore_value)
+    _semaphore_value:int 
+    _semaphore:asyncio.Semaphore 
 
-    _rate_limit_delay:float | None = None
+    _rate_limit_delay:float | None
 
-    _decorator_to_use:typing.Union[typing.Callable, None] = None
+    _decorator_to_use:typing.Union[typing.Callable, None] 
 
-    _log_directory:str | None = None
+    _log_directory:str | None 
 
     ## Set to prevent any blockage of content
     _safety_settings = [
@@ -64,8 +64,8 @@ class GeminiServiceProtocol(typing.Protocol):
         },
     ]
 
-    _json_mode:bool = False
-    _response_schema:typing.Mapping[str, typing.Any] | None = None
+    _json_mode:bool 
+    _response_schema:typing.Mapping[str, typing.Any] | None 
     
     @staticmethod
     def _redefine_client() -> None: ...
