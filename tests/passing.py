@@ -74,25 +74,25 @@ async def main():
 
     print("-----------------------------------------------Text response-----------------------------------------------")
 
-    print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator, logging_directory=logging_directory))
+    print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Speech", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator, logging_directory=logging_directory))
 
-    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator, logging_directory=logging_directory))
+    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Speech", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator, logging_directory=logging_directory))
 
     print("-----------------------------------------------Gemini-----------------------------------------------")
 
     print("-----------------------------------------------Text response-----------------------------------------------")
 
-    print(Elucidate.gemini_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="gemini-pro", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
+    print(Elucidate.gemini_evaluate("山村美紀の独白\nYamamura Miki's Speech", model="gemini-pro", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
 
-    print(await Elucidate.gemini_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="gemini-pro", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
+    print(await Elucidate.gemini_evaluate_async("山村美紀の独白\nYamamura Miki's Speech", model="gemini-pro", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
 
     print("-----------------------------------------------Anthropic-----------------------------------------------")
 
     print("-----------------------------------------------Text response-----------------------------------------------")
 
-    print(Elucidate.anthropic_evaluate("山村美紀の独白\nYamamura Miki's Monologue", model="claude-3-haiku-20240307", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
+    print(Elucidate.anthropic_evaluate("山村美紀の独白\nYamamura Miki's Speech", model="claude-3-haiku-20240307", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
 
-    print(await Elucidate.anthropic_evaluate_async("山村美紀の独白\nYamamura Miki's Monologue", model="claude-3-haiku-20240307", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
+    print(await Elucidate.anthropic_evaluate_async("山村美紀の独白\nYamamura Miki's Speech", model="claude-3-haiku-20240307", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
     
 
 ##-------------------end-of-main()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
