@@ -7,12 +7,12 @@ import typing
 import asyncio
 
 ## custom modules
-from ..protocols.anthropic_service_protocol import AnthropicServiceProtocol
+from protocols.anthropic_service_protocol import AnthropicServiceProtocol
 
-from ..util.attributes import VALID_JSON_ANTHROPIC_MODELS
-from ..decorators import _sync_logging_decorator, _async_logging_decorator
+from util.attributes import VALID_JSON_ANTHROPIC_MODELS
+from decorators import _sync_logging_decorator, _async_logging_decorator
 
-from ..util.classes import ModelTranslationMessage, AnthropicMessage, anthropic_service, NOT_GIVEN
+from util.classes import ModelTranslationMessage, AnthropicMessage, anthropic_service, NOT_GIVEN
 
 ##-------------------start-of-Attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

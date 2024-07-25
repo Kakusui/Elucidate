@@ -7,11 +7,11 @@ import typing
 import asyncio
 
 ## custom modules
-from ..protocols.openai_service_protocol import OpenAIServiceProtocol
+from protocols.openai_service_protocol import OpenAIServiceProtocol
 
-from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, openai_service
-from ..util.attributes import VALID_JSON_OPENAI_MODELS
-from ..decorators import _sync_logging_decorator, _async_logging_decorator
+from util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, openai_service
+from util.attributes import VALID_JSON_OPENAI_MODELS
+from decorators import _sync_logging_decorator, _async_logging_decorator
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -7,13 +7,13 @@ import typing
 import asyncio
 
 ## custom modules 
-from .protocols.openai_service_protocol import OpenAIServiceProtocol
-from .protocols.gemini_service_protocol import GeminiServiceProtocol
-from .protocols.anthropic_service_protocol import AnthropicServiceProtocol
+from protocols.openai_service_protocol import OpenAIServiceProtocol
+from protocols.gemini_service_protocol import GeminiServiceProtocol
+from protocols.anthropic_service_protocol import AnthropicServiceProtocol
 
-from .util.classes import openai_service, gemini_service, anthropic_service
+from util.classes import openai_service, gemini_service, anthropic_service
 
-from .monkeystrapper import monkeystrap
+from monkeystrapper import monkeystrap
 
 ## monkeystrapping new functions to EasyTL
 monkeystrap()

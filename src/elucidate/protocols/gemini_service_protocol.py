@@ -10,7 +10,7 @@ import asyncio
 import google.generativeai as genai
 
 ## custom modules
-from ..util.classes import GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse
+from util.classes import GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse
 
 class GeminiServiceProtocol(typing.Protocol):
 

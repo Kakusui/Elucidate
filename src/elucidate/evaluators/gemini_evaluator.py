@@ -10,11 +10,11 @@ import asyncio
 import google.generativeai as genai
 
 ## custom modules
-from ..protocols.gemini_service_protocol import GeminiServiceProtocol
+from protocols.gemini_service_protocol import GeminiServiceProtocol
 
-from ..util.classes import gemini_service, GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse
-from ..util.attributes import VALID_JSON_GEMINI_MODELS as VALID_SYSTEM_MESSAGE_MODELS
-from ..decorators import _sync_logging_decorator, _async_logging_decorator
+from util.classes import gemini_service, GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse
+from util.attributes import VALID_JSON_GEMINI_MODELS as VALID_SYSTEM_MESSAGE_MODELS
+from decorators import _sync_logging_decorator, _async_logging_decorator
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

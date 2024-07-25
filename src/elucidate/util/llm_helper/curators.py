@@ -2,7 +2,7 @@
 import typing
 
 ## custom modules
-from ..attributes import _convert_to_correct_type
+from attributes import _convert_to_correct_type
 
 ## unused
 

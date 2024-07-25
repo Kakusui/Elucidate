@@ -7,7 +7,7 @@ import typing
 import asyncio
 
 ## custom modules
-from ..util.classes import NOT_GIVEN, NotGiven, Anthropic, AsyncAnthropic, ModelTranslationMessage, AnthropicMessage
+from util.classes import NOT_GIVEN, NotGiven, Anthropic, AsyncAnthropic, ModelTranslationMessage, AnthropicMessage
 
 class AnthropicServiceProtocol(typing.Protocol):
 

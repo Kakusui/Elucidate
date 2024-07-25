@@ -7,7 +7,7 @@ import typing
 import asyncio
 
 ## custom modules
-from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, OpenAI, AsyncOpenAI
+from util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, NotGiven, OpenAI, AsyncOpenAI
 
 class OpenAIServiceProtocol(typing.Protocol):
 

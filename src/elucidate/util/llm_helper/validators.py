@@ -6,9 +6,9 @@
 import typing
 
 ## custom modules
-from ..classes import NOT_GIVEN
-from ..attributes import VALID_JSON_OPENAI_MODELS as ALLOWED_OPENAI_MODELS, VALID_JSON_GEMINI_MODELS as ALLOWED_GEMINI_MODELS, VALID_JSON_ANTHROPIC_MODELS as ALLOWED_ANTHROPIC_MODELS
-from ...exceptions import InvalidEasyTLSettingsException
+from classes import NOT_GIVEN
+from attributes import VALID_JSON_OPENAI_MODELS as ALLOWED_OPENAI_MODELS, VALID_JSON_GEMINI_MODELS as ALLOWED_GEMINI_MODELS, VALID_JSON_ANTHROPIC_MODELS as ALLOWED_ANTHROPIC_MODELS
+from exceptions import InvalidEasyTLSettingsException
 
 ##-------------------start-of-_validate_elucidate_llm_translation_settings()--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

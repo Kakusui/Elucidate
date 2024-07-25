@@ -27,11 +27,11 @@ from easytl import AnthropicAPIError, AnthropicConflictError, AnthropicNotFoundE
 ## Elucidate things
 from .elucidate import Elucidate
 
-from .util.classes import SystemTranslationMessage, ModelTranslationMessage
-from .util.classes import ChatCompletion
-from .util.classes import GenerateContentResponse, AsyncGenerateContentResponse, GenerationConfig
-from .util.classes import AnthropicMessage, AnthropicTextBlock, AnthropicToolUseBlock
-from .util.classes import NOT_GIVEN, NotGiven
+from util.classes import SystemTranslationMessage, ModelTranslationMessage
+from util.classes import ChatCompletion
+from util.classes import GenerateContentResponse, AsyncGenerateContentResponse, GenerationConfig
+from util.classes import AnthropicMessage, AnthropicTextBlock, AnthropicToolUseBlock
+from util.classes import NOT_GIVEN, NotGiven
 
 from .exceptions import ElucidateException, InvalidElucidateSettingsException
 
