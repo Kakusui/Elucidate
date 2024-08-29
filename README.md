@@ -7,7 +7,7 @@
 - [**Features**](#features)
 - [**API Usage**](#api-usage)
   - [Evaluating Text](#evaluating-text)
-  - [Generic Translation Methods](#generic-translation-methods)
+  - [Generic Evaluation Methods](#generic-translation-methods)
   - [Cost Calculation](#cost-calculation)
   - [Credentials Management](#credentials-management)
 - [**License**](#license)
