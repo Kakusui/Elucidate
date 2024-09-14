@@ -7,7 +7,7 @@
 - [**Features**](#features)
 - [**API Usage**](#api-usage)
   - [Evaluating Text](#evaluating-text)
-  - [Generic Evaluation Methods](#generic-translation-methods)
+  - [Generic Translation Methods](#generic-translation-methods)
   - [Cost Calculation](#cost-calculation)
   - [Credentials Management](#credentials-management)
 - [**License**](#license)
@@ -72,7 +72,7 @@ setuptools>=61.0
 wheel
 setuptools_scm>=6.0
 tomli
-easytl>=0.4.9
+easytl>=0.4.10
 ```
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
