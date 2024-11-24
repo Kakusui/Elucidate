@@ -10,7 +10,6 @@ import asyncio
 from ..protocols.anthropic_service_protocol import AnthropicServiceProtocol
 
 from ..util.attributes import VALID_JSON_ANTHROPIC_MODELS
-from ..decorators import _sync_logging_decorator, _async_logging_decorator
 
 from ..util.classes import ModelTranslationMessage, AnthropicMessage, anthropic_service, NOT_GIVEN
 
@@ -56,7 +55,6 @@ def _anthropic_build_evaluation_batches(text:typing.Union[str, typing.Iterable[s
 ##-------------------start-of-_anthropic_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-@_sync_logging_decorator
 def _anthropic_evaluate_translation(evaluation_instructions:typing.Optional[str],
                             evaluation_prompt: ModelTranslationMessage,
                             _protocol:AnthropicServiceProtocol = typing.cast(AnthropicServiceProtocol, anthropic_service.AnthropicService)
@@ -87,7 +85,6 @@ def _anthropic_evaluate_translation(evaluation_instructions:typing.Optional[str]
 ##-------------------start-of-_anthropic_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-@_async_logging_decorator
 async def _anthropic_evaluate_translation_async(evaluation_instructions: typing.Optional[str],
                             evaluation_prompt: ModelTranslationMessage,
                             _protocol:AnthropicServiceProtocol = typing.cast(AnthropicServiceProtocol, anthropic_service.AnthropicService)

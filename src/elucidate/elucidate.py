@@ -91,6 +91,9 @@ class Elucidate:
         
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
         
+        if(logging_directory is not None):
+            print("Logging directory has been deprecated for openai_evaluate().")
+
         _settings = _return_curated_openai_settings(locals())
 
         _validate_elucidate_llm_translation_settings(_settings, "openai")
@@ -115,7 +118,6 @@ class Elucidate:
                                         presence_penalty=presence_penalty,
                                         frequency_penalty=frequency_penalty,
                                         decorator=decorator,
-                                        logging_directory=logging_directory,
                                         semaphore=None,
                                         rate_limit_delay=evaluation_delay,
                                         json_mode=json_mode)
@@ -204,6 +206,9 @@ class Elucidate:
         """
                 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
+
+        if(logging_directory is not None):
+            print("Logging directory has been deprecated for openai_evaluate_async().")
         
         _settings = _return_curated_openai_settings(locals())
 
@@ -229,7 +234,6 @@ class Elucidate:
                                         presence_penalty=presence_penalty,
                                         frequency_penalty=frequency_penalty,
                                         decorator=decorator,
-                                        logging_directory=logging_directory,
                                         semaphore=semaphore,
                                         rate_limit_delay=evaluation_delay,
                                         json_mode=json_mode)
@@ -315,6 +319,9 @@ class Elucidate:
 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
 
+        if(logging_directory is not None):
+            print("Logging directory has been deprecated for gemini_evaluate().")
+
         _settings = _return_curated_gemini_settings(locals())
 
         _validate_elucidate_llm_translation_settings(_settings, "gemini")
@@ -341,7 +348,6 @@ class Elucidate:
                                           stop_sequences=stop_sequences,
                                           max_output_tokens=max_output_tokens,
                                           decorator=decorator,
-                                          logging_directory=logging_directory,
                                           semaphore=None,
                                           rate_limit_delay=evaluation_delay,
                                           json_mode=json_mode,
@@ -428,6 +434,9 @@ class Elucidate:
 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
 
+        if(logging_directory is not None):
+            print("Logging directory has been deprecated for gemini_evaluate_async().")
+
         _settings = _return_curated_gemini_settings(locals())
 
         _validate_elucidate_llm_translation_settings(_settings, "gemini")
@@ -454,7 +463,6 @@ class Elucidate:
                                           stop_sequences=stop_sequences,
                                           max_output_tokens=max_output_tokens,
                                           decorator=decorator,
-                                          logging_directory=logging_directory,
                                           semaphore=semaphore,
                                           rate_limit_delay=evaluation_delay,
                                           json_mode=json_mode,
@@ -532,6 +540,9 @@ class Elucidate:
 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
 
+        if(logging_directory is not None):
+            print("Logging directory has been deprecated for anthropic_evaluate().")
+
         _settings = _return_curated_anthropic_settings(locals())
 
         _validate_elucidate_llm_translation_settings(_settings, "anthropic")
@@ -557,7 +568,6 @@ class Elucidate:
                                             stream=False,
                                             max_tokens=max_output_tokens,
                                             decorator=decorator,
-                                            logging_directory=logging_directory,
                                             semaphore=None,
                                             rate_limit_delay=evaluation_delay,
                                             json_mode=json_mode,
@@ -655,6 +665,9 @@ class Elucidate:
 
         assert response_type in ["text", "raw", "json", "raw_json"], InvalidResponseFormatException("Invalid response type specified. Must be 'text', 'raw', 'json' or 'raw_json'.")
 
+        if(logging_directory is not None):
+            print("Logging directory has been deprecated for anthropic_evaluate_async().")
+
         _settings = _return_curated_anthropic_settings(locals())
 
         _validate_elucidate_llm_translation_settings(_settings, "anthropic")
@@ -680,7 +693,6 @@ class Elucidate:
                                             stream=False,
                                             max_tokens=max_output_tokens,
                                             decorator=decorator,
-                                            logging_directory=logging_directory,
                                             semaphore=semaphore,
                                             rate_limit_delay=evaluation_delay,
                                             json_mode=json_mode,

@@ -14,7 +14,6 @@ from ..protocols.gemini_service_protocol import GeminiServiceProtocol
 
 from ..util.classes import gemini_service, GenerationConfig, GenerateContentResponse, AsyncGenerateContentResponse
 from ..util.attributes import VALID_JSON_GEMINI_MODELS as VALID_SYSTEM_MESSAGE_MODELS
-from ..decorators import _sync_logging_decorator, _async_logging_decorator
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -86,7 +85,6 @@ def _gemini_redefine_client_decorator(func:typing.Callable,
 
 @staticmethod
 @_gemini_redefine_client_decorator
-@_sync_logging_decorator
 def _gemini_evaluate_translation(text_to_evaluate:str,
                     _protocol:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
                     ) -> GenerateContentResponse:
@@ -143,7 +141,6 @@ def _gemini_internal_evaluate_translation(text_to_evaluate:str,
 
 @staticmethod
 @_gemini_redefine_client_decorator
-@_async_logging_decorator
 async def _gemini_evaluate_translation_async(text_to_evaluate:str,
                                _protocol:GeminiServiceProtocol = typing.cast(GeminiServiceProtocol, gemini_service.GeminiService)
                                ) -> AsyncGenerateContentResponse:

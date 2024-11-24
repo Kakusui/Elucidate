@@ -32,15 +32,8 @@ def setup_preconditions():
     gemini_api_key = os.environ.get('GEMINI_API_KEY')
     anthropic_api_key = os.environ.get('ANTHROPIC_API_KEY')
 
-    ## the following will replace the keys with local test keys if the environment variables are not set (not a github actions environment)
-    logging_directory = os.getenv('LOGGING_DIRECTORY', '/tmp/')
-
     if(openai_api_key is None):
         openai_api_key = read_api_key("tests/openai.txt")
-
-        ## if any keys are not set, change logging directory to local test environment
-        script_location = os.path.dirname(os.path.realpath(__file__))
-        logging_directory = script_location
 
     if(gemini_api_key is None):
         gemini_api_key = read_api_key("tests/gemini.txt")
@@ -58,13 +51,12 @@ def setup_preconditions():
     Elucidate.set_credentials("gemini", gemini_api_key)
     Elucidate.set_credentials("anthropic", anthropic_api_key)
 
-    return logging_directory
 
 ##-------------------start-of-main()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 async def main():
 
-    logging_directory = setup_preconditions()
+    setup_preconditions()
 
     ## probably self explanatory from this point on
 
@@ -74,9 +66,9 @@ async def main():
 
     print("-----------------------------------------------Text response-----------------------------------------------")
 
-    print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Speech", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator, logging_directory=logging_directory))
+    print(Elucidate.openai_evaluate("山村美紀の独白\nYamamura Miki's Speech", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
 
-    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Speech", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator, logging_directory=logging_directory))
+    print(await Elucidate.openai_evaluate_async("山村美紀の独白\nYamamura Miki's Speech", model="gpt-3.5-turbo", evaluation_instructions="Please suggest a revised English translation based on the original Japanese text. Do not change if the translation is already correct.", decorator=decorator))
 
     print("-----------------------------------------------Gemini-----------------------------------------------")
 

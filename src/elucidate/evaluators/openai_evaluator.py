@@ -11,7 +11,6 @@ from ..protocols.openai_service_protocol import OpenAIServiceProtocol
 
 from ..util.classes import SystemTranslationMessage, ModelTranslationMessage, ChatCompletion, NOT_GIVEN, openai_service
 from ..util.attributes import VALID_JSON_OPENAI_MODELS
-from ..decorators import _sync_logging_decorator, _async_logging_decorator
 
 ##-------------------start-of-attributes---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -62,7 +61,6 @@ def _openai_build_evaluation_batches(text: typing.Union[str, typing.Iterable[str
 ##-------------------start-of-_openai_evaluate_translation()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-@_sync_logging_decorator
 def _openai_evaluate_translation(evaluation_instructions:typing.Optional[SystemTranslationMessage],
                             evaluation_prompt:ModelTranslationMessage,
                             service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
@@ -93,7 +91,6 @@ def _openai_evaluate_translation(evaluation_instructions:typing.Optional[SystemT
 ##-------------------start-of-_openai_evaluate_translation_async()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @staticmethod
-@_async_logging_decorator
 async def _openai_evaluate_translation_async(evaluation_instructions:typing.Optional[SystemTranslationMessage],
                             evaluation_prompt:ModelTranslationMessage,
                             service:OpenAIServiceProtocol = typing.cast(OpenAIServiceProtocol, openai_service.OpenAIService)
