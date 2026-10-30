@@ -15,7 +15,7 @@ dependencies = [
 name = "elucidate"
 version = "v0.0.3.1"
 authors = [
-  { name="Bikatr7", email="Bikatr7@proton.me" },
+  { name="Kaden Bilyeu", email="kadenbilyeu@proton.me" },
 ]
 description = "Smarter Translations through LLM Self-Evaluation"
 readme = "README.md"
