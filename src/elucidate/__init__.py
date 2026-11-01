@@ -4,7 +4,7 @@
 
 from .version import VERSION as __version__  # noqa
 
-__author__ = "Kaden Bilyeu (Bikatr7) <Bikatr7@proton.me>"
+__author__ = "Kaden Bilyeu <kadenbilyeu@proton.me>"
 
 ## EasyTL things
 from easytl import Message
